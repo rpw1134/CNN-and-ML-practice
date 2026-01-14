@@ -28,7 +28,22 @@ def read_csv_file():
 
     # Slicing based on both (notice the use of .loc)
     row_and_col_slice = data_portion.loc[1:10, ["Survived", "Pclass"]]
-    print(row_and_col_slice)
+
+    # Selecting a single value, returns a simple scalar
+    selection = data_portion.at[2, "Pclass"]
+
+    # Selecting based on position (rows 2 and 3, columns 1 and 4). Can also use slicing notation
+    positional_selection = data_portion.iloc[[2,3], [1,4]]
+
+    # NOTE: use loc when referring to indices/labels, iloc for positions (think numpy indices, rather than the actual data index)
+
+    # Select ROWS where 'Survived' == 1
+    filtered_rows = data_portion[data_portion["Survived"] == 1]
+
+    # Filter out string cols, Select VALUES that are greater than 3. Notice the difference in using no_strings for condition, but data_portion for selection
+    no_strings = data_portion.loc[:, data_portion.dtypes != object]
+    selected_values = data_portion[no_strings>=1]
+    print(selected_values)
 
 def main():
     read_csv_file()
