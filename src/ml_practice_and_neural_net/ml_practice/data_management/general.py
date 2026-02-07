@@ -19,7 +19,7 @@ def split_data(data: NDArray, labels: NDArray, test_ratio: float = 0.8, shuffle:
     :param shuffle: bool: Whether to shuffle the data and labels before splitting. Default is True.
     :return: Tuple[np.NDArray, np.NDArray, np.NDArray, np.NDArray]: A tuple containing the training data, training labels, testing data, and testing labels in the following order: (train_data, train_labels, test_data, test_labels).
     """
-    indices = np.indices(data.shape[0])
+    indices = np.arange(data.shape[0])
     if shuffle:
         np.random.shuffle(indices)
     split_index = int(len(indices) * (1 - test_ratio))
