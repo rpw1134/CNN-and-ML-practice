@@ -19,7 +19,7 @@ def build(X: NDArray, Y: NDArray):
         logits = X @ parameters.T # NxC
         one_hots = np.sum(logits * Y, axis=1) # NxC @ CxN gives NxN, summed right gives Nx1
         log_sum_exp = np.log(np.sum(np.exp(logits), axis=1)) # NxC gives Nx1
-        return -1 * float(np.mean(log_sum_exp - one_hots))
+        return -float(np.mean(one_hots-log_sum_exp))
 
     def gradient(parameters: NDArray) -> NDArray:
         # find prediction vectors for each x, subtract the corresponding 1 hot label to get gradient wrt logits
