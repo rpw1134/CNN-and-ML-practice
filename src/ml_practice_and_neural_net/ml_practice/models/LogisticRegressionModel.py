@@ -12,8 +12,6 @@ class LogisticRegressionModel:
         self.weights = None
         self.training_set = tuple()
         self.testing_set = tuple()
-        self.loss_func = None
-        self.gradient_func = None
 
     def fit(self, X: NDArray , y: NDArray ):
         if X.ndim == 1:
@@ -26,9 +24,7 @@ class LogisticRegressionModel:
         self.testing_set = (testing_data, testing_labels)
         self.training_set = (training_data, training_labels)
 
-        loss_func, gradient_func = ce.build(training_data, training_labels)
-        self.loss_func = loss_func
-        self.gradient_func = gradient_func
+        _, gradient_func = ce.build(training_data, training_labels)
 
         initial_params = np.random.randn(X.shape[1], 1)
 
@@ -45,7 +41,9 @@ class LogisticRegressionModel:
         return logistic(logits)
 
     def evaluate_ce_training_loss(self) -> float:
-        loss = self.loss_func(self.weights)
+        training_data, training_labels = self.training_set
+        loss_func, _ = ce.build(training_data, training_labels)
+        loss = loss_func(self.weights)
         return loss
 
     def evaluate_ce_testing_loss(self) -> float:

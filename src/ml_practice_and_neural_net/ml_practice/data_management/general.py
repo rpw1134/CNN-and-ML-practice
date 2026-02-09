@@ -26,13 +26,3 @@ def split_data(data: NDArray, labels: NDArray, test_ratio: float = 0.8, shuffle:
     train_indices = indices[:split_index]
     test_indices = indices[split_index:]
     return data[train_indices], labels[train_indices], data[test_indices], labels[test_indices]
-
-def convert_to_one_hot(indexed_labels: NDArray, num_categories: int) -> NDArray:
-    """
-    Converts a set of labels to one-hot encoding based on a provided mapping.
-    :param indexed_labels: np.NDArray: An array of labels that have been indexed (e.g., mapped to integers) according to a predefined mapping. Each element in this array corresponds to a label for a sample in the dataset.
-    :return: np.NDArray: A 2D array where each row corresponds to a one-hot encoded vector for the respective label in the input array. The number of columns will be equal to the number of unique labels as defined in the labels_map.
-    """
-    one_hot = np.zeros((indexed_labels.shape[0], num_categories))
-    one_hot[np.arange(indexed_labels.shape[0]), indexed_labels] = 1
-    return one_hot
