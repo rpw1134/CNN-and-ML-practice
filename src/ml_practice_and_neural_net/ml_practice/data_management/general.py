@@ -14,7 +14,7 @@ def split_data(data: NDArray, labels: NDArray, test_ratio: float = 0.8, shuffle:
     """
         Splits the data and labels into training and testing sets based on the specified ratio. Optionally shuffles the data before splitting.
     :param data: np.NDArray: The dataset to be split. It is expected to be a 2D array where rows are samples and columns are features.
-    :param labels: np.NDArray: The corresponding labels for the dataset. It is expected to be a 1D array where each element corresponds to the label of the respective sample in the data.
+    :param labels: np.NDArray: The corresponding labels for the dataset. It is expected to be an array or matrix where each element corresponds to the label of the respective sample in the data.
     :param test_ratio: float: The ratio of the dataset to be used for testing. The remaining portion will be used for testing. Default is 0.2
     :param shuffle: bool: Whether to shuffle the data and labels before splitting. Default is True.
     :return: Tuple[np.NDArray, np.NDArray, np.NDArray, np.NDArray]: A tuple containing the training data, training labels, testing data, and testing labels in the following order: (train_data, train_labels, test_data, test_labels).
@@ -26,3 +26,13 @@ def split_data(data: NDArray, labels: NDArray, test_ratio: float = 0.8, shuffle:
     train_indices = indices[:split_index]
     test_indices = indices[split_index:]
     return data[train_indices], labels[train_indices], data[test_indices], labels[test_indices]
+
+def convert_to_one_hot(indexed_labels: NDArray, num_categories: int) -> NDArray:
+    """
+    Converts a set of labels to one-hot encoding based on a provided mapping.
+    :param indexed_labels: np.NDArray: An array of labels that have been indexed (e.g., mapped to integers) according to a predefined mapping. Each element in this array corresponds to a label for a sample in the dataset.
+    :return: np.NDArray: A 2D array where each row corresponds to a one-hot encoded vector for the respective label in the input array. The number of columns will be equal to the number of unique labels as defined in the labels_map.
+    """
+    one_hot = np.zeros((indexed_labels.shape[0], num_categories))
+    one_hot[np.arange(indexed_labels.shape[0]), indexed_labels] = 1
+    return one_hot
