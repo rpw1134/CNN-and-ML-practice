@@ -17,7 +17,7 @@ class SoftmaxRegressionModel:
 
     def fit(self, X, y):
         if X.ndim != 2:
-            np.reshape(X, (X.shape[0], 1))
+            X = X.reshape(X.shape[0], 1)
 
         # data transformations
         X = add_data_bias_term(X)
@@ -35,7 +35,7 @@ class SoftmaxRegressionModel:
         loss, gradient = cce.build(training_data, training_labels)
 
         # initialize parameters with small random values, shape should be CxD where C is number of categories and D is number of features (including bias)
-        initial_params = np.random.randn(one_hot_labels.shape[1], X.shape[1])
+        initial_params = 0.01 * np.random.randn(one_hot_labels.shape[1], X.shape[1])
 
         self.weights = gradient_descent(init_params=initial_params,
                                         learning_rate=self.learning_rate,
@@ -43,11 +43,11 @@ class SoftmaxRegressionModel:
                                         num_iterations=self.training_iterations)
         return self
 
-    def predict(self, X: NDArray):
+    def predict(self, X: NDArray) -> NDArray:
         X = add_data_bias_term(X)
         logits = X @ self.weights.T
         index = np.argmax(logits, axis=1)
-        return self.index_to_categories[index]
+        return np.array([self.index_to_categories[i] for i in index])
 
     def evaluate_cce_training_loss(self) -> float:
         training_data, training_labels = self.training_set

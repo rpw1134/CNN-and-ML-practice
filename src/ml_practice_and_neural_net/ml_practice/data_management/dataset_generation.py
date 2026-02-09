@@ -169,6 +169,81 @@ def generate_circle_data(n_samples: int = 200,
     return X, y
 
 
+def generate_multiclass_linear_data(n_samples: int = 300,
+                                    n_features: int = 2,
+                                    n_classes: int = 3,
+                                    separation: float = 5.0,
+                                    noise: float = 0.5,
+                                    random_state: int = 42) -> Tuple[NDArray, NDArray]:
+    """
+    Generate a linearly separable multi-class classification dataset.
+    Classes are arranged in a circle pattern in feature space.
+
+    Parameters:
+    -----------
+    n_samples : int
+        Total number of samples (will be split evenly between classes)
+    n_features : int
+        Number of features (dimensions)
+    n_classes : int
+        Number of classes
+    separation : float
+        Distance of cluster centers from origin (larger = more separated)
+    noise : float
+        Standard deviation of the Gaussian noise (larger = more overlap)
+    random_state : int
+        Random seed for reproducibility
+
+    Returns:
+    --------
+    X : NDArray of shape (n_samples, n_features)
+        Feature matrix
+    y : NDArray of shape (n_samples,)
+        Class labels (0, 1, 2, ..., n_classes-1)
+
+    Example:
+    --------
+    >>> X, y = generate_multiclass_linear_data(n_samples=300, n_classes=3)
+    >>> print(X.shape, y.shape)
+    (300, 2) (300,)
+    """
+    np.random.seed(random_state)
+
+    samples_per_class = n_samples // n_classes
+    X_list = []
+    y_list = []
+
+    for class_idx in range(n_classes):
+        # Position classes in a circle (for 2D) or evenly distributed in space
+        if n_features == 2:
+            angle = 2 * np.pi * class_idx / n_classes
+            center = separation * np.array([np.cos(angle), np.sin(angle)])
+        else:
+            # For higher dimensions, create orthogonal-ish centers
+            center = np.zeros(n_features)
+            center[class_idx % n_features] = separation * (1 if class_idx // n_features % 2 == 0 else -1)
+            if n_features > 1:
+                center[(class_idx + 1) % n_features] = separation * 0.5 * (class_idx / n_classes - 0.5)
+
+        # Generate samples around the center
+        X_class = np.random.randn(samples_per_class, n_features) * noise + center
+        y_class = np.full(samples_per_class, class_idx)
+
+        X_list.append(X_class)
+        y_list.append(y_class)
+
+    # Combine all classes
+    X = np.vstack(X_list)
+    y = np.concatenate(y_list)
+
+    # Shuffle
+    indices = np.random.permutation(len(y))
+    X = X[indices]
+    y = y[indices]
+
+    return X, y
+
+
 if __name__ == "__main__":
     # Demo usage
     print("Generating sample datasets...\n")
@@ -189,5 +264,10 @@ if __name__ == "__main__":
     X_circle, y_circle = generate_circle_data(n_samples=200)
     print(f"Circle dataset: X shape={X_circle.shape}, y shape={y_circle.shape}")
     print(f"  Class 0: {np.sum(y_circle == 0)} samples")
-    print(f"  Class 1: {np.sum(y_circle == 1)} samples")
+    print(f"  Class 1: {np.sum(y_circle == 1)} samples\n")
 
+    # Multiclass data
+    X_multi, y_multi = generate_multiclass_linear_data(n_samples=300, n_classes=3)
+    print(f"Multiclass dataset: X shape={X_multi.shape}, y shape={y_multi.shape}")
+    for i in range(3):
+        print(f"  Class {i}: {np.sum(y_multi == i)} samples")
