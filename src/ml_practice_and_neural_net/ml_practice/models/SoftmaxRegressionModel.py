@@ -8,7 +8,39 @@ from numpy.typing import NDArray
 
 
 class SoftmaxRegressionModel(BaseModel):
-    def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000):
+    """
+    Softmax Regression model for multi-class classification.
+
+    This model uses the softmax function to predict probabilities across multiple classes.
+    It optimizes parameters using gradient descent with categorical cross-entropy loss.
+
+    Parameters:
+        learning_rate (float): Step size for gradient descent. Default: 0.01
+        num_training_iterations (int): Maximum number of training iterations. Default: 1000
+        reg_technique (str | None): Regularization type. Options:
+            - "l1": L1 regularization (Lasso) - encourages sparse weights
+            - "l2": L2 regularization (Ridge) - prevents large weights
+            - "elastic_net": Combination of L1 and L2
+            - None: No regularization
+            Default: None
+        lambda_reg (float): Regularization strength (λ). Default: 0.01
+
+    Attributes:
+        weights (NDArray): Learned model parameters (set after calling fit())
+        training_set (tuple): Training data and labels
+        testing_set (tuple): Testing data and labels
+        index_to_categories (dict): Mapping from class indices to original category labels
+
+    Example:
+        >>> model = SoftmaxRegressionModel(learning_rate=0.01,
+        ...                                 num_training_iterations=1000,
+        ...                                 reg_technique="l2",
+        ...                                 lambda_reg=0.1)
+        >>> model.fit(X_train, y_train)
+        >>> predictions = model.predict(X_test)  # Returns original category labels
+        >>> train_loss = model.evaluate_cce_training_loss()
+    """
+    def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000,
         super().__init__(learning_rate, num_training_iterations)
         self.index_to_categories = None
 

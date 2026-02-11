@@ -15,6 +15,26 @@ class BaseModel(ABC):
 
     def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000,
                  reg_technique: str | None = None, lambda_reg: float = 0.01) -> None:
+        """
+        Initialize the base model with training hyperparameters.
+
+        Args:
+            learning_rate: Step size for gradient descent optimization.
+                          Higher values may speed up convergence but risk overshooting.
+                          Default: 0.01
+            num_training_iterations: Maximum number of gradient descent iterations to perform.
+                                    Training may stop earlier if convergence is detected.
+                                    Default: 1000
+            reg_technique: Type of regularization to apply. Options:
+                          - "l1": L1 regularization (Lasso) - encourages sparsity, zeros out small weights
+                          - "l2": L2 regularization (Ridge) - penalizes large weights, prevents overfitting
+                          - "elastic_net": Combination of L1 and L2 regularization
+                          - None: No regularization applied
+                          Default: None
+            lambda_reg: Regularization strength (λ). Higher values increase the penalty on weights.
+                       Only used if reg_technique is specified.
+                       Default: 0.01
+        """
         self.learning_rate = learning_rate
         self.training_iterations = num_training_iterations
         self.weights: Optional[NDArray] = None

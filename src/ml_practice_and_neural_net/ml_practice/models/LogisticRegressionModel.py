@@ -9,6 +9,37 @@ from ..optimization.gradient_descent import gradient_descent
 
 
 class LogisticRegressionModel(BaseModel):
+    """
+    Logistic Regression model for binary classification.
+
+    This model uses the logistic (sigmoid) function to predict probabilities for binary outcomes.
+    It optimizes parameters using gradient descent with cross-entropy loss.
+
+    Parameters:
+        learning_rate (float): Step size for gradient descent. Default: 0.01
+        num_training_iterations (int): Maximum number of training iterations. Default: 1000
+        reg_technique (str | None): Regularization type. Options:
+            - "l1": L1 regularization (Lasso) - encourages sparse weights
+            - "l2": L2 regularization (Ridge) - prevents large weights
+            - "elastic_net": Combination of L1 and L2
+            - None: No regularization
+            Default: None
+        lambda_reg (float): Regularization strength (λ). Default: 0.01
+
+    Attributes:
+        weights (NDArray): Learned model parameters (set after calling fit())
+        training_set (tuple): Training data and labels
+        testing_set (tuple): Testing data and labels
+
+    Example:
+        >>> model = LogisticRegressionModel(learning_rate=0.01,
+        ...                                  num_training_iterations=1000,
+        ...                                  reg_technique="l2",
+        ...                                  lambda_reg=0.1)
+        >>> model.fit(X_train, y_train)
+        >>> predictions = model.predict(X_test)
+        >>> train_loss = model.evaluate_ce_training_loss()
+    """
     def fit(self, X: NDArray, y: NDArray) -> "LogisticRegressionModel":
         if X.ndim == 1:
             X = X.reshape(-1, 1)
