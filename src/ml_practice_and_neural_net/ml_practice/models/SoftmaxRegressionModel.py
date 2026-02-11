@@ -41,7 +41,8 @@ class SoftmaxRegressionModel(BaseModel):
         >>> train_loss = model.evaluate_cce_training_loss()
     """
     def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000,
-        super().__init__(learning_rate, num_training_iterations)
+                 reg_technique: str | None = None, lambda_reg: float = 0.01):
+        super().__init__(learning_rate, num_training_iterations, reg_technique, lambda_reg)
         self.index_to_categories = None
 
     def fit(self, X, y) -> "SoftmaxRegressionModel":

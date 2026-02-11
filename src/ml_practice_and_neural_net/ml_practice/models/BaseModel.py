@@ -40,7 +40,7 @@ class BaseModel(ABC):
         self.weights: Optional[NDArray] = None
         self.training_set: Tuple = ()
         self.testing_set: Tuple = ()
-        self.reg_technique = regularization_map(reg_technique) if reg_technique else None
+        self.reg_technique = regularization_map[reg_technique] if reg_technique else None
         self.lambda_reg = lambda_reg
 
 

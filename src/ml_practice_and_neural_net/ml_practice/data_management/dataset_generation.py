@@ -244,6 +244,122 @@ def generate_multiclass_linear_data(n_samples: int = 300,
     return X, y
 
 
+def generate_linear_regression_data(n_samples: int = 200,
+                                    n_features: int = 3,
+                                    noise: float = 0.5,
+                                    true_coef_range: tuple = (-5.0, 5.0),
+                                    true_intercept_range: tuple = (-10.0, 10.0),
+                                    random_state: int = 42) -> Tuple[NDArray, NDArray, NDArray]:
+    """
+    Generate synthetic data for linear regression with a known linear relationship.
+
+    y = X @ true_weights + true_intercept + noise
+
+    Parameters:
+    -----------
+    n_samples : int
+        Number of samples to generate
+    n_features : int
+        Number of input features
+    noise : float
+        Standard deviation of Gaussian noise added to outputs
+    true_coef_range : tuple
+        (min, max) range for true coefficient values
+    true_intercept_range : tuple
+        (min, max) range for true intercept value
+    random_state : int
+        Random seed for reproducibility
+
+    Returns:
+    --------
+    X : NDArray of shape (n_samples, n_features)
+        Feature matrix
+    y : NDArray of shape (n_samples, 1)
+        Target values (continuous)
+    true_params : NDArray of shape (n_features + 1, 1)
+        True parameters [intercept, weight_1, ..., weight_n]
+        Used to verify model performance
+
+    Example:
+    --------
+    >>> X, y, true_params = generate_linear_regression_data(n_samples=100, n_features=2)
+    >>> print(X.shape, y.shape, true_params.shape)
+    (100, 2) (100, 1) (3, 1)
+    """
+    np.random.seed(random_state)
+
+    # Generate random input features from standard normal distribution
+    X = np.random.randn(n_samples, n_features)
+
+    # Generate true weights and intercept
+    true_weights = np.random.uniform(true_coef_range[0], true_coef_range[1], (n_features, 1))
+    true_intercept = np.random.uniform(true_intercept_range[0], true_intercept_range[1])
+
+    # Generate target values: y = X @ weights + intercept + noise
+    y = X @ true_weights + true_intercept + np.random.randn(n_samples, 1) * noise
+
+    # Combine intercept and weights for verification
+    true_params = np.vstack([[[true_intercept]], true_weights])
+
+    return X, y, true_params
+
+
+def generate_polynomial_regression_data(n_samples: int = 200,
+                                        degree: int = 2,
+                                        noise: float = 1.0,
+                                        x_range: tuple = (-3.0, 3.0),
+                                        random_state: int = 42) -> Tuple[NDArray, NDArray]:
+    """
+    Generate synthetic data for polynomial regression (1D input).
+
+    Useful for demonstrating that linear regression can handle polynomial features
+    when combined with polynomial feature transformation.
+
+    Parameters:
+    -----------
+    n_samples : int
+        Number of samples to generate
+    degree : int
+        Degree of the polynomial (e.g., 2 for quadratic)
+    noise : float
+        Standard deviation of Gaussian noise
+    x_range : tuple
+        (min, max) range for input feature x
+    random_state : int
+        Random seed for reproducibility
+
+    Returns:
+    --------
+    X : NDArray of shape (n_samples, 1)
+        Feature matrix (single feature)
+    y : NDArray of shape (n_samples, 1)
+        Target values following a polynomial relationship
+
+    Example:
+    --------
+    >>> X, y = generate_polynomial_regression_data(n_samples=100, degree=2)
+    >>> print(X.shape, y.shape)
+    (100, 1) (100, 1)
+    """
+    np.random.seed(random_state)
+
+    # Generate random x values
+    X = np.random.uniform(x_range[0], x_range[1], (n_samples, 1))
+
+    # Generate polynomial coefficients
+    coefficients = np.random.uniform(-2, 2, degree + 1)
+
+    # Calculate y = a_n*x^n + a_(n-1)*x^(n-1) + ... + a_1*x + a_0 + noise
+    y = np.zeros((n_samples, 1))
+    for i, coef in enumerate(coefficients):
+        y += coef * (X ** i)
+
+    # Add noise
+    y += np.random.randn(n_samples, 1) * noise
+
+    return X, y
+
+
 if __name__ == "__main__":
     # Demo usage
     print("Generating sample datasets...\n")
@@ -271,3 +387,17 @@ if __name__ == "__main__":
     print(f"Multiclass dataset: X shape={X_multi.shape}, y shape={y_multi.shape}")
     for i in range(3):
         print(f"  Class {i}: {np.sum(y_multi == i)} samples")
+
+    # Linear regression data
+    X_reg, y_reg, true_params = generate_linear_regression_data(n_samples=200, n_features=3)
+    print(f"\nLinear regression dataset: X shape={X_reg.shape}, y shape={y_reg.shape}")
+    print(f"  True parameters shape: {true_params.shape}")
+    print(f"  Target mean: {np.mean(y_reg):.2f}, std: {np.std(y_reg):.2f}")
+
+    # Polynomial regression data
+    X_poly, y_poly = generate_polynomial_regression_data(n_samples=200, degree=2)
+    print(f"\nPolynomial regression dataset: X shape={X_poly.shape}, y shape={y_poly.shape}")
+    print(f"  Input range: [{np.min(X_poly):.2f}, {np.max(X_poly):.2f}]")
+    print(f"  Target mean: {np.mean(y_poly):.2f}, std: {np.std(y_poly):.2f}")
+
+
