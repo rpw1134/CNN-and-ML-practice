@@ -1,21 +1,18 @@
 from ml_practice_and_neural_net.ml_practice.data_management.encoding import convert_to_one_hot
 from ml_practice_and_neural_net.ml_practice.data_management.general import add_data_bias_term, split_data
 import numpy as np
+from .BaseModel import BaseModel
 from ..loss import cce
 from ..optimization.gradient_descent import gradient_descent
 from numpy.typing import NDArray
 
 
-class SoftmaxRegressionModel:
+class SoftmaxRegressionModel(BaseModel):
     def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000):
+        super().__init__(learning_rate, num_training_iterations)
         self.index_to_categories = None
-        self.learning_rate = learning_rate
-        self.training_iterations = num_training_iterations
-        self.weights = None
-        self.training_set = tuple()
-        self.testing_set = tuple()
 
-    def fit(self, X, y):
+    def fit(self, X, y) -> "SoftmaxRegressionModel":
         if X.ndim != 2:
             X = X.reshape(X.shape[0], 1)
 
@@ -50,16 +47,10 @@ class SoftmaxRegressionModel:
         return np.array([self.index_to_categories[i] for i in index])
 
     def evaluate_cce_training_loss(self) -> float:
-        training_data, training_labels = self.training_set
-        loss_func, _ = cce.build(training_data, training_labels)
-        loss = loss_func(self.weights)
-        return loss
+        return self.evaluate_error(cce.build, use_training_set=True)
 
     def evaluate_cce_testing_loss(self) -> float:
-        testing_data, testing_labels = self.testing_set
-        loss_func, _ = cce.build(testing_data, testing_labels)
-        loss = loss_func(self.weights)
-        return loss
+        return self.evaluate_error(cce.build, use_training_set=False)
 
 
 

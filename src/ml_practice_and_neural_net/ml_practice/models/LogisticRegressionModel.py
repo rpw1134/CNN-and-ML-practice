@@ -1,19 +1,15 @@
 import numpy as np
 from numpy.typing import NDArray
 
+from .BaseModel import BaseModel
 from ..data_management.transformations import logistic
 from ..loss import ce
 from ..data_management.general import split_data, add_data_bias_term
 from ..optimization.gradient_descent import gradient_descent
-class LogisticRegressionModel:
-    def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000):
-        self.learning_rate = learning_rate
-        self.training_iterations = num_training_iterations
-        self.weights = None
-        self.training_set = tuple()
-        self.testing_set = tuple()
 
-    def fit(self, X: NDArray , y: NDArray ):
+
+class LogisticRegressionModel(BaseModel):
+    def fit(self, X: NDArray, y: NDArray) -> "LogisticRegressionModel":
         if X.ndim == 1:
             X = X.reshape(-1, 1)
         if y.shape[0] != X.shape[0]:
@@ -41,13 +37,7 @@ class LogisticRegressionModel:
         return logistic(logits)
 
     def evaluate_ce_training_loss(self) -> float:
-        training_data, training_labels = self.training_set
-        loss_func, _ = ce.build(training_data, training_labels)
-        loss = loss_func(self.weights)
-        return loss
+        return self.evaluate_error(ce.build, use_training_set=True)
 
     def evaluate_ce_testing_loss(self) -> float:
-        testing_data, testing_labels = self.testing_set
-        loss_func, _ = ce.build(testing_data, testing_labels)
-        loss = loss_func(self.weights)
-        return loss
+        return self.evaluate_error(ce.build, use_training_set=False)
