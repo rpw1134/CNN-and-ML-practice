@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Callable, Tuple, Optional
 from numpy.typing import NDArray
 
+from ml_practice_and_neural_net.ml_practice.regularization import regularization_map
+
 
 class BaseModel(ABC):
     """
@@ -11,12 +13,16 @@ class BaseModel(ABC):
     The evaluate_error() method is provided as a concrete implementation.
     """
 
-    def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000):
+    def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000,
+                 reg_technique: str | None = None, lambda_reg: float = 0.01) -> None:
         self.learning_rate = learning_rate
         self.training_iterations = num_training_iterations
         self.weights: Optional[NDArray] = None
         self.training_set: Tuple = ()
         self.testing_set: Tuple = ()
+        self.reg_technique = regularization_map(reg_technique) if reg_technique else None
+        self.lambda_reg = lambda_reg
+
 
     @abstractmethod
     def fit(self, X: NDArray, y: NDArray) -> "BaseModel":
@@ -73,6 +79,7 @@ class BaseModel(ABC):
 
         data, labels = dataset
         loss_func, _ = loss_builder(data, labels)
-        loss = loss_func(self.weights)
+        regularization_loss, _ = self.reg_technique(self.lambda_reg) if self.reg_technique else (lambda x: 0, lambda x: 0)
+        loss = loss_func(self.weights) + regularization_loss(self.weights)
         return loss
 

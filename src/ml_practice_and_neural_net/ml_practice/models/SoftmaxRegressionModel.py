@@ -29,7 +29,8 @@ class SoftmaxRegressionModel(BaseModel):
         self.testing_set = (testing_data, testing_labels)
         self.training_set = (training_data, training_labels)
 
-        loss, gradient = cce.build(training_data, training_labels)
+        _, gradient = cce.build(training_data, training_labels)
+        _, regularization_gradient = self.reg_technique(self.lambda_reg) if self.reg_technique else (None, lambda x: np.zeros_like(x))
 
         # initialize parameters with small random values, shape should be CxD where C is number of categories and D is number of features (including bias)
         initial_params = 0.01 * np.random.randn(one_hot_labels.shape[1], X.shape[1])
@@ -37,7 +38,8 @@ class SoftmaxRegressionModel(BaseModel):
         self.weights = gradient_descent(init_params=initial_params,
                                         learning_rate=self.learning_rate,
                                         gradient_func=gradient,
-                                        num_iterations=self.training_iterations)
+                                        num_iterations=self.training_iterations,
+                                        regularization_gradient=regularization_gradient)
         return self
 
     def predict(self, X: NDArray) -> NDArray:

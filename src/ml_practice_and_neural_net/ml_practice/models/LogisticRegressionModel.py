@@ -21,13 +21,15 @@ class LogisticRegressionModel(BaseModel):
         self.training_set = (training_data, training_labels)
 
         _, gradient_func = ce.build(training_data, training_labels)
+        _, regularization_gradient = self.reg_technique(self.lambda_reg) if self.reg_technique else (None, lambda x: np.zeros_like(x))
 
         initial_params = np.random.randn(X.shape[1], 1)
 
         computed_weights = gradient_descent(init_params=initial_params,
                                             gradient_func=gradient_func,
                                             learning_rate=self.learning_rate,
-                                            num_iterations=self.training_iterations)
+                                            num_iterations=self.training_iterations,
+                                            regularization_gradient=regularization_gradient)
         self.weights = computed_weights
         return self
 
