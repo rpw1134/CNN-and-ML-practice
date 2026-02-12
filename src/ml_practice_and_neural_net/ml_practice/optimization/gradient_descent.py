@@ -122,21 +122,51 @@ def momentum_optimizer(init_params, learning_rate, gradient_func, beta=0.9, epsi
     return params
 
 
-def adam_optimizer(init_params, learning_rate, gradient_func, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+def adam_optimizer(init_params, learning_rate, gradient_func, beta=0.9, gamma=0.999, epsilon=1e-8, termination_difference=1e-8, num_iterations=1000, regularization_gradient=None):
     """
     Performs Adam (Adaptive Moment Estimation) optimization.
 
     :param init_params: Initial parameters
     :param learning_rate: float: The learning rate (alpha). Typical values: 0.001, 0.0001
     :param gradient_func: Callable: Function that computes the gradient
-    :param beta1: float: Exponential decay rate for first moment estimates. Default: 0.9
-    :param beta2: float: Exponential decay rate for second moment estimates. Default: 0.999
+    :param beta: float: Exponential decay rate for first moment estimates. Default: 0.9
+    :param gamma: float: Exponential decay rate for second moment estimates. Default: 0.999
     :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param termination_difference: float: Threshold for convergence. Default: 1e-8
     :param num_iterations: int: Number of iterations
     :param regularization_gradient: Optional regularization gradient function
     :return: np.NDArray: Optimized parameters
     """
-    pass
+    params = init_params
+    sum_squares_av = np.zeros_like(params)  # Initialize velocity/momentum term
+    velocity = np.zeros_like(params)
+
+    if not regularization_gradient:
+        regularization_gradient = lambda p: np.zeros_like(p)
+
+    for i in range(num_iterations):
+        # Compute total gradient (loss + regularization)
+        grad = gradient_func(params)
+        reg_component = regularization_gradient(params)
+        total_grad = grad + reg_component
+
+        # Update biased first moment (momentum) and second moment (squared gradient moving average)
+        velocity = beta * velocity + (1 - beta) * total_grad
+        sum_squares_av = gamma * sum_squares_av + (1 - gamma) * (total_grad ** 2)
+
+        # Bias correction for moments (corrects initialization bias, especially important in early iterations)
+        m_hat = velocity / (1 - beta ** (i + 1))
+        v_hat = sum_squares_av / (1 - gamma ** (i + 1))
+
+        # Update parameters with adaptive learning rate
+        new_params = params - learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
+
+        # Check convergence
+        if np.linalg.norm(new_params - params) < termination_difference:
+            break
+        params = new_params
+
+    return params
 
 
 def adam_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=32, beta=0.9, gamma=0.999, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
