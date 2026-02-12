@@ -159,7 +159,7 @@ def adam_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=3
     pass
 
 
-def adagrad_optimizer(init_params, learning_rate, gradient_func, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+def adagrad_optimizer(init_params, learning_rate, gradient_func, epsilon=1e-8, termination_difference=1e-8, num_iterations=1000, regularization_gradient=None):
     """
     Performs Adagrad (Adaptive Gradient) optimization.
 
@@ -167,11 +167,35 @@ def adagrad_optimizer(init_params, learning_rate, gradient_func, epsilon=1e-8, n
     :param learning_rate: float: Base learning rate. Typical values: 0.01, 0.001
     :param gradient_func: Callable: Function that computes the gradient
     :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param termination_difference: float: Threshold for convergence. Default: 1e-8
     :param num_iterations: int: Number of iterations
     :param regularization_gradient: Optional regularization gradient function
     :return: np.NDArray: Optimized parameters
     """
-    pass
+    params = init_params
+    sum_squares = np.zeros_like(params)  # Initialize velocity/momentum term
+
+    if not regularization_gradient:
+        regularization_gradient = lambda p: np.zeros_like(p)
+
+    for i in range(num_iterations):
+        # Compute total gradient (loss + regularization)
+        grad = gradient_func(params)
+        reg_component = regularization_gradient(params)
+        total_grad = grad + reg_component
+
+        # Accumulate squared gradient
+        sum_squares = sum_squares + total_grad ** 2
+
+        # Update parameters with adaptive learning rate
+        new_params = params - (learning_rate / np.sqrt(sum_squares + epsilon)) * total_grad
+
+        # Check convergence
+        if np.linalg.norm(new_params - params) < termination_difference:
+            break
+        params = new_params
+
+    return params
 
 
 def adagrad_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=32, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
