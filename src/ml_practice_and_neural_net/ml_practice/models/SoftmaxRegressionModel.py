@@ -5,6 +5,8 @@ from .BaseModel import BaseModel
 from ..loss import cce
 from ..optimization.gradient_descent import gradient_descent
 from numpy.typing import NDArray
+from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
 
 
 class SoftmaxRegressionModel(BaseModel):
@@ -15,15 +17,8 @@ class SoftmaxRegressionModel(BaseModel):
     It optimizes parameters using gradient descent with categorical cross-entropy loss.
 
     Parameters:
-        learning_rate (float): Step size for gradient descent. Default: 0.01
-        num_training_iterations (int): Maximum number of training iterations. Default: 1000
-        reg_technique (str | None): Regularization type. Options:
-            - "l1": L1 regularization (Lasso) - encourages sparse weights
-            - "l2": L2 regularization (Ridge) - prevents large weights
-            - "elastic_net": Combination of L1 and L2
-            - None: No regularization
-            Default: None
-        lambda_reg (float): Regularization strength (λ). Default: 0.01
+        hyperparameters (Hyperparameters): Training hyperparameters such as learning rate and iterations.
+        model_data (ModelData | None): Optional metadata including regularization type and training method.
 
     Attributes:
         weights (NDArray): Learned model parameters (set after calling fit())
@@ -32,17 +27,15 @@ class SoftmaxRegressionModel(BaseModel):
         index_to_categories (dict): Mapping from class indices to original category labels
 
     Example:
-        >>> model = SoftmaxRegressionModel(learning_rate=0.01,
-        ...                                 num_training_iterations=1000,
-        ...                                 reg_technique="l2",
-        ...                                 lambda_reg=0.1)
+        >>> hyperparams = Hyperparameters(learning_rate=0.01, num_training_iterations=1000)
+        >>> model_data = ModelData(given_data=X_train, labels=y_train, regularizer="l2", training_method="gradient_descent")
+        >>> model = SoftmaxRegressionModel(hyperparams, model_data)
         >>> model.fit(X_train, y_train)
         >>> predictions = model.predict(X_test)  # Returns original category labels
         >>> train_loss = model.evaluate_cce_training_loss()
     """
-    def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000,
-                 reg_technique: str | None = None, lambda_reg: float = 0.01):
-        super().__init__(learning_rate, num_training_iterations, reg_technique, lambda_reg)
+    def __init__(self, hyperparameters: Hyperparameters, model_data: ModelData | None = None):
+        super().__init__(hyperparameters, model_data)
         self.index_to_categories = None
 
     def fit(self, X, y) -> "SoftmaxRegressionModel":
@@ -86,6 +79,4 @@ class SoftmaxRegressionModel(BaseModel):
 
     def evaluate_cce_testing_loss(self) -> float:
         return self.evaluate_error(cce.build, use_training_set=False)
-
-
 

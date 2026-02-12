@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_linear_regression_data
 from ml_practice_and_neural_net.ml_practice.models.LinearRegressionModel import LinearRegressionModel
+from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
 
 
 def calculate_rmse(y_true, y_pred):
@@ -48,10 +50,11 @@ if __name__ == "__main__":
 
     # Train the model WITHOUT regularization
     print("\n2. Training LinearRegressionModel (no regularization)...")
-    model = LinearRegressionModel(
+    hyperparams = Hyperparameters(
         learning_rate=0.1,
         num_training_iterations=1000
     )
+    model = LinearRegressionModel(hyperparams)
     model.fit(X, y)
     print("   Training complete!")
     print(f"\n   Learned parameters (including intercept):")
@@ -87,12 +90,18 @@ if __name__ == "__main__":
 
     # Train model WITH L2 regularization
     print("\n5. Training LinearRegressionModel with L2 regularization...")
-    model_l2 = LinearRegressionModel(
+    hyperparams_l2 = Hyperparameters(
         learning_rate=0.1,
         num_training_iterations=1000,
-        reg_technique="l2",
         lambda_reg=0.1
     )
+    model_data_l2 = ModelData(
+        given_data=X,
+        labels=y,
+        regularizer="l2",
+        training_method="gradient_descent"
+    )
+    model_l2 = LinearRegressionModel(hyperparams_l2, model_data_l2)
     model_l2.fit(X, y)
     print("   Training complete!")
     print(f"\n   Learned parameters (with L2):")

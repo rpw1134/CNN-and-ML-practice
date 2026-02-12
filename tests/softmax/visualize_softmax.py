@@ -2,10 +2,15 @@
 Visualize the SoftmaxRegressionModel decision boundaries on 3-class data.
 Requires matplotlib.
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
+
 import numpy as np
 import matplotlib.pyplot as plt
-from src.ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_multiclass_linear_data
-from src.ml_practice_and_neural_net.ml_practice.models.SoftmaxRegressionModel import SoftmaxRegressionModel
+from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_multiclass_linear_data
+from ml_practice_and_neural_net.ml_practice.models.SoftmaxRegressionModel import SoftmaxRegressionModel
+from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
 
 
 def plot_decision_boundaries(model, X, y, title="Decision Boundaries"):
@@ -52,7 +57,8 @@ if __name__ == "__main__":
     )
 
     # Train model
-    model = SoftmaxRegressionModel(learning_rate=0.1, num_training_iterations=2000)
+    hyperparams = Hyperparameters(learning_rate=0.1, num_training_iterations=2000)
+    model = SoftmaxRegressionModel(hyperparams)
     model.fit(X, y)
 
     # Calculate accuracy
@@ -77,4 +83,3 @@ if __name__ == "__main__":
         plot.show()
     except Exception as e:
         print(f"Could not display plot (no display available): {e}")
-

@@ -1,9 +1,14 @@
 """
 Additional test for SoftmaxRegressionModel with 4 classes and slightly more noise.
 """
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
+
 import numpy as np
-from src.ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_multiclass_linear_data
-from src.ml_practice_and_neural_net.ml_practice.models.SoftmaxRegressionModel import SoftmaxRegressionModel
+from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_multiclass_linear_data
+from ml_practice_and_neural_net.ml_practice.models.SoftmaxRegressionModel import SoftmaxRegressionModel
+from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
 
 
 def calculate_accuracy(y_true, y_pred):
@@ -34,10 +39,8 @@ if __name__ == "__main__":
 
     # Train the model
     print("\n2. Training SoftmaxRegressionModel...")
-    model = SoftmaxRegressionModel(
-        learning_rate=0.1,
-        num_training_iterations=3000
-    )
+    hyperparams = Hyperparameters(learning_rate=0.1, num_training_iterations=3000)
+    model = SoftmaxRegressionModel(hyperparams)
     model.fit(X, y)
     print("   Training complete!")
 
@@ -72,4 +75,3 @@ if __name__ == "__main__":
     else:
         print("❌ ISSUE: Model accuracy is lower than expected.")
     print("="*60)
-

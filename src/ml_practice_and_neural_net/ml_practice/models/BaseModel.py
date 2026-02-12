@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Callable, Tuple, Optional
 from numpy.typing import NDArray
 
+from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
 from ml_practice_and_neural_net.ml_practice.regularization import regularization_map
 
 
@@ -13,36 +15,26 @@ class BaseModel(ABC):
     The evaluate_error() method is provided as a concrete implementation.
     """
 
-    def __init__(self, learning_rate: float = 0.01, num_training_iterations: int = 1000,
-                 reg_technique: str | None = None, lambda_reg: float = 0.01) -> None:
+    def __init__(self, hyperparameters: Hyperparameters, model_data: ModelData | None = None) -> None:
         """
-        Initialize the base model with training hyperparameters.
+        Initialize the base model with dataclass-based training configuration.
 
         Args:
-            learning_rate: Step size for gradient descent optimization.
-                          Higher values may speed up convergence but risk overshooting.
-                          Default: 0.01
-            num_training_iterations: Maximum number of gradient descent iterations to perform.
-                                    Training may stop earlier if convergence is detected.
-                                    Default: 1000
-            reg_technique: Type of regularization to apply. Options:
-                          - "l1": L1 regularization (Lasso) - encourages sparsity, zeros out small weights
-                          - "l2": L2 regularization (Ridge) - penalizes large weights, prevents overfitting
-                          - "elastic_net": Combination of L1 and L2 regularization
-                          - None: No regularization applied
-                          Default: None
-            lambda_reg: Regularization strength (λ). Higher values increase the penalty on weights.
-                       Only used if reg_technique is specified.
-                       Default: 0.01
+            hyperparameters: Training hyperparameters (learning rate, iterations, regularization strength, etc.).
+            model_data: Optional training metadata including regularization type and training method.
         """
-        self.learning_rate = learning_rate
-        self.training_iterations = num_training_iterations
+        self.hyperparameters = hyperparameters
+        self.model_data = model_data
+        self.learning_rate = hyperparameters.learning_rate
+        self.training_iterations = hyperparameters.num_training_iterations
         self.weights: Optional[NDArray] = None
         self.training_set: Tuple = ()
         self.testing_set: Tuple = ()
-        self.reg_technique = regularization_map[reg_technique] if reg_technique else None
-        self.lambda_reg = lambda_reg
 
+        reg_choice = model_data.regularizer if model_data else None
+        self.reg_technique = regularization_map[reg_choice] if reg_choice else None
+        self.lambda_reg = hyperparameters.lambda_reg
+        self.training_method = model_data.training_method if model_data else None
 
     @abstractmethod
     def fit(self, X: NDArray, y: NDArray) -> "BaseModel":
