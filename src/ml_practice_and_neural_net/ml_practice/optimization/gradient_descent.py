@@ -186,7 +186,56 @@ def adam_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=3
     :param regularization_gradient: Optional regularization gradient function
     :return: np.NDArray: Optimized parameters
     """
-    pass
+    num_examples = X.shape[0]
+    if batch_size is None or batch_size > num_examples:
+        batch_size = num_examples
+
+    params = init_params
+    velocity = np.zeros_like(params)
+    sum_squares_av = np.zeros_like(params)
+
+    if not regularization_gradient:
+        regularization_gradient = lambda p: np.zeros_like(p)
+
+    iteration = 0  # Track global iteration for bias correction
+
+    for epoch in range(num_iterations):
+        # Shuffle data at start of each epoch
+        indices = np.arange(num_examples)
+        np.random.shuffle(indices)
+
+        curr_num_examples = 0
+        while curr_num_examples < num_examples:
+            iteration += 1
+
+            # Get batch indices
+            if num_examples - curr_num_examples < batch_size:
+                batch_indices = indices[curr_num_examples:]
+            else:
+                batch_indices = indices[curr_num_examples:curr_num_examples + batch_size]
+
+            curr_num_examples += len(batch_indices)
+
+            # Compute gradient on batch
+            batch_X = X[batch_indices]
+            batch_y = y[batch_indices]
+            _, grad_func = loss_builder(batch_X, batch_y)
+            grad = grad_func(params)
+            reg_component = regularization_gradient(params)
+            total_grad = grad + reg_component
+
+            # Update biased first moment (momentum) and second moment (squared gradient moving average)
+            velocity = beta * velocity + (1 - beta) * total_grad
+            sum_squares_av = gamma * sum_squares_av + (1 - gamma) * (total_grad ** 2)
+
+            # Bias correction for moments
+            m_hat = velocity / (1 - beta ** iteration)
+            v_hat = sum_squares_av / (1 - gamma ** iteration)
+
+            # Update parameters with adaptive learning rate
+            params = params - learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
+
+    return params
 
 
 def adagrad_optimizer(init_params, learning_rate, gradient_func, epsilon=1e-8, termination_difference=1e-8, num_iterations=1000, regularization_gradient=None):
@@ -243,7 +292,46 @@ def adagrad_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_siz
     :param regularization_gradient: Optional regularization gradient function
     :return: np.NDArray: Optimized parameters
     """
-    pass
+    num_examples = X.shape[0]
+    if batch_size is None or batch_size > num_examples:
+        batch_size = num_examples
+
+    params = init_params
+    sum_squares = np.zeros_like(params)
+
+    if not regularization_gradient:
+        regularization_gradient = lambda p: np.zeros_like(p)
+
+    for epoch in range(num_iterations):
+        # Shuffle data at start of each epoch
+        indices = np.arange(num_examples)
+        np.random.shuffle(indices)
+
+        curr_num_examples = 0
+        while curr_num_examples < num_examples:
+            # Get batch indices
+            if num_examples - curr_num_examples < batch_size:
+                batch_indices = indices[curr_num_examples:]
+            else:
+                batch_indices = indices[curr_num_examples:curr_num_examples + batch_size]
+
+            curr_num_examples += len(batch_indices)
+
+            # Compute gradient on batch
+            batch_X = X[batch_indices]
+            batch_y = y[batch_indices]
+            _, grad_func = loss_builder(batch_X, batch_y)
+            grad = grad_func(params)
+            reg_component = regularization_gradient(params)
+            total_grad = grad + reg_component
+
+            # Accumulate squared gradient
+            sum_squares = sum_squares + total_grad ** 2
+
+            # Update parameters with adaptive learning rate
+            params = params - (learning_rate / np.sqrt(sum_squares + epsilon)) * total_grad
+
+    return params
 
 
 def rmsprop_optimizer(init_params, learning_rate, gradient_func, gamma=0.9, epsilon=1e-8, termination_difference=1e-8, num_iterations=1000, regularization_gradient=None):
@@ -286,7 +374,7 @@ def rmsprop_optimizer(init_params, learning_rate, gradient_func, gamma=0.9, epsi
     return params
 
 
-def rmsprop_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=32, beta=0.9, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+def rmsprop_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=32, gamma=0.9, epsilon=1e-8, termination_difference=1e-8, num_iterations=1000, regularization_gradient=None):
     """
     Performs RMSprop optimization with mini-batch gradient descent.
 
@@ -296,11 +384,57 @@ def rmsprop_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_siz
     :param learning_rate: float: Base learning rate. Typical values: 0.001, 0.0001
     :param loss_builder: Function that builds loss and gradient functions from data
     :param batch_size: int: Size of mini-batches. Default: 32
-    :param beta: float: Decay rate for moving average of squared gradients. Default: 0.9
+    :param gamma: float: Decay rate for moving average of squared gradients. Default: 0.9
     :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param termination_difference: float: Threshold for convergence. Default: 1e-8
     :param num_iterations: int: Number of epochs
     :param regularization_gradient: Optional regularization gradient function
     :return: np.NDArray: Optimized parameters
     """
-    pass
+    num_examples = X.shape[0]
+    if batch_size is None or batch_size > num_examples:
+        batch_size = num_examples
+
+    params = init_params
+    sum_squares_av = np.zeros_like(params)
+
+    if not regularization_gradient:
+        regularization_gradient = lambda p: np.zeros_like(p)
+
+    for epoch in range(num_iterations):
+        old_params = params.copy()
+
+        # Shuffle data at start of each epoch
+        indices = np.arange(num_examples)
+        np.random.shuffle(indices)
+
+        curr_num_examples = 0
+        while curr_num_examples < num_examples:
+            # Get batch indices
+            if num_examples - curr_num_examples < batch_size:
+                batch_indices = indices[curr_num_examples:]
+            else:
+                batch_indices = indices[curr_num_examples:curr_num_examples + batch_size]
+
+            curr_num_examples += len(batch_indices)
+
+            # Compute gradient on batch
+            batch_X = X[batch_indices]
+            batch_y = y[batch_indices]
+            _, grad_func = loss_builder(batch_X, batch_y)
+            grad = grad_func(params)
+            reg_component = regularization_gradient(params)
+            total_grad = grad + reg_component
+
+            # Update moving average of squared gradient
+            sum_squares_av = gamma * sum_squares_av + (1 - gamma) * (total_grad ** 2)
+
+            # Update parameters with adaptive learning rate
+            params = params - (learning_rate / np.sqrt(sum_squares_av + epsilon)) * total_grad
+
+        # Check convergence after each epoch
+        if np.linalg.norm(params - old_params) < termination_difference:
+            break
+
+    return params
 
