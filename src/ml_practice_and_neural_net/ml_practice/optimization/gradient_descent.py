@@ -44,7 +44,6 @@ def mini_batch_gradient_descent(init_params, X, y, learning_rate, loss_builder, 
         batch_size = num_examples
 
     params = init_params
-    new_params = None
 
     if not regularization_gradient:
         regularization_gradient = lambda p: 0
@@ -82,3 +81,109 @@ def mini_batch_gradient_descent(init_params, X, y, learning_rate, loss_builder, 
         if np.linalg.norm(params - old_params) < epsilon:
                 break
     return params
+
+
+def adam_optimizer(init_params, learning_rate, gradient_func, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+    """
+    Performs Adam (Adaptive Moment Estimation) optimization.
+
+    :param init_params: Initial parameters
+    :param learning_rate: float: The learning rate (alpha). Typical values: 0.001, 0.0001
+    :param gradient_func: Callable: Function that computes the gradient
+    :param beta1: float: Exponential decay rate for first moment estimates. Default: 0.9
+    :param beta2: float: Exponential decay rate for second moment estimates. Default: 0.999
+    :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param num_iterations: int: Number of iterations
+    :param regularization_gradient: Optional regularization gradient function
+    :return: np.NDArray: Optimized parameters
+    """
+    pass
+
+
+def adam_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=32, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+    """
+    Performs Adam optimization with mini-batch gradient descent.
+
+    :param init_params: Initial parameters
+    :param X: Training features (NxD)
+    :param y: Training labels
+    :param learning_rate: float: The learning rate. Typical values: 0.001, 0.0001
+    :param loss_builder: Function that builds loss and gradient functions from data
+    :param batch_size: int: Size of mini-batches. Default: 32
+    :param beta1: float: Exponential decay rate for first moment. Default: 0.9
+    :param beta2: float: Exponential decay rate for second moment. Default: 0.999
+    :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param num_iterations: int: Number of epochs
+    :param regularization_gradient: Optional regularization gradient function
+    :return: np.NDArray: Optimized parameters
+    """
+    pass
+
+
+def adagrad_optimizer(init_params, learning_rate, gradient_func, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+    """
+    Performs Adagrad (Adaptive Gradient) optimization.
+
+    :param init_params: Initial parameters
+    :param learning_rate: float: Base learning rate. Typical values: 0.01, 0.001
+    :param gradient_func: Callable: Function that computes the gradient
+    :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param num_iterations: int: Number of iterations
+    :param regularization_gradient: Optional regularization gradient function
+    :return: np.NDArray: Optimized parameters
+    """
+    pass
+
+
+def adagrad_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=32, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+    """
+    Performs Adagrad optimization with mini-batch gradient descent.
+
+    :param init_params: Initial parameters
+    :param X: Training features (NxD)
+    :param y: Training labels
+    :param learning_rate: float: Base learning rate. Typical values: 0.01, 0.001
+    :param loss_builder: Function that builds loss and gradient functions from data
+    :param batch_size: int: Size of mini-batches. Default: 32
+    :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param num_iterations: int: Number of epochs
+    :param regularization_gradient: Optional regularization gradient function
+    :return: np.NDArray: Optimized parameters
+    """
+    pass
+
+
+def rmsprop_optimizer(init_params, learning_rate, gradient_func, beta=0.9, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+    """
+    Performs RMSprop (Root Mean Square Propagation) optimization.
+
+    :param init_params: Initial parameters
+    :param learning_rate: float: Base learning rate. Typical values: 0.001, 0.0001
+    :param gradient_func: Callable: Function that computes the gradient
+    :param beta: float: Decay rate for moving average of squared gradients. Default: 0.9
+    :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param num_iterations: int: Number of iterations
+    :param regularization_gradient: Optional regularization gradient function
+    :return: np.NDArray: Optimized parameters
+    """
+    pass
+
+
+def rmsprop_mini_batch(init_params, X, y, learning_rate, loss_builder, batch_size=32, beta=0.9, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+    """
+    Performs RMSprop optimization with mini-batch gradient descent.
+
+    :param init_params: Initial parameters
+    :param X: Training features (NxD)
+    :param y: Training labels
+    :param learning_rate: float: Base learning rate. Typical values: 0.001, 0.0001
+    :param loss_builder: Function that builds loss and gradient functions from data
+    :param batch_size: int: Size of mini-batches. Default: 32
+    :param beta: float: Decay rate for moving average of squared gradients. Default: 0.9
+    :param epsilon: float: Small constant for numerical stability. Default: 1e-8
+    :param num_iterations: int: Number of epochs
+    :param regularization_gradient: Optional regularization gradient function
+    :return: np.NDArray: Optimized parameters
+    """
+    pass
+
