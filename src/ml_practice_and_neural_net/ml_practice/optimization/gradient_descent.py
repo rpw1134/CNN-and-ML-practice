@@ -82,6 +82,45 @@ def mini_batch_gradient_descent(init_params, X, y, learning_rate, loss_builder, 
                 break
     return params
 
+# For implementation and study purposes
+def momentum_optimizer(init_params, learning_rate, gradient_func, beta=0.9, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
+    """
+    Performs Momentum optimization.
+
+    :param init_params: Initial parameters
+    :param learning_rate: float: The learning rate (alpha). Typical values: 0.01, 0.001
+    :param gradient_func: Callable: Function that computes the gradient
+    :param beta: float: Momentum factor (exponential decay rate). Default: 0.9
+    :param epsilon: float: Small constant for convergence check. Default: 1e-8
+    :param num_iterations: int: Number of iterations
+    :param regularization_gradient: Optional regularization gradient function
+    :return: np.NDArray: Optimized parameters
+    """
+    params = init_params
+    velocity = np.zeros_like(params)  # Initialize velocity/momentum term
+
+    if not regularization_gradient:
+        regularization_gradient = lambda p: np.zeros_like(p)
+
+    for i in range(num_iterations):
+        # Compute total gradient (loss + regularization)
+        grad = gradient_func(params)
+        reg_component = regularization_gradient(params)
+        total_grad = (1 - beta) * (grad + reg_component)
+
+        # Update VELOCITY with momentum
+        velocity = beta * velocity + total_grad
+
+        # Update parameters
+        new_params = params - learning_rate * velocity
+
+        # Check convergence
+        if np.linalg.norm(new_params - params) < epsilon:
+            break
+        params = new_params
+
+    return params
+
 
 def adam_optimizer(init_params, learning_rate, gradient_func, beta1=0.9, beta2=0.999, epsilon=1e-8, num_iterations=1000, regularization_gradient=None):
     """
