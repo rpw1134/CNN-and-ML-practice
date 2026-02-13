@@ -42,8 +42,8 @@ class HyperparameterTuner:
         For each set of hyperparameters in the parameter grid, this method:
         1. Creates a new model instance with those hyperparameters
         2. Performs k-fold cross-validation on the shuffled dataset
-        3. Collects mean error, mean accuracy, and standard deviation metrics
-        4. Identifies the best hyperparameter set based on lowest mean error
+        3. Collects mean error, mean accuracy, and standard deviation metrics for both training and testing
+        4. Identifies the best hyperparameter set based on lowest mean test error
 
         The data is shuffled once before evaluation to ensure fair comparison across
         all parameter sets.
@@ -56,12 +56,12 @@ class HyperparameterTuner:
         for param_set in self.params_grid:
             new_model = self.model(**param_set)
             cross_validator = CrossValidator(new_model, shuffled_data, shuffled_labels, self.k).cross_validate()
-            self.mean_stats.append(cross_validator.get_mean_metrics())
+            self.mean_stats.append(cross_validator.get_all_metrics())
             self.errors_and_accuracies.append(cross_validator.get_errors_and_accuracies())
 
-        # Find best parameters based on lowest mean error
-        mean_errors = [stats["mean_error"] for stats in self.mean_stats]
-        best_model_index = np.argmin(mean_errors)
+        # Find best parameters based on lowest mean test error
+        mean_test_errors = [stats["test"]["mean_error"] for stats in self.mean_stats]
+        best_model_index = np.argmin(mean_test_errors)
         self.best_params = self.params_grid[best_model_index]
         return self
 
@@ -71,13 +71,16 @@ class HyperparameterTuner:
 
         Returns a dictionary where keys are formatted strings representing each hyperparameter
         configuration (e.g., "learning_rate=0.01, epochs=100"), and values are dictionaries
-        containing the mean error, mean accuracy, and standard deviation of errors across all folds.
+        containing both training and testing metrics across all folds.
 
         :return: Dictionary mapping hyperparameter configurations to their performance metrics.
-                 Each value contains: {"mean_error": float, "mean_accuracy": float, "std_dev": float}
+                 Each value contains: {
+                     "train": {"mean_error": float, "mean_accuracy": float, "std_dev": float},
+                     "test": {"mean_error": float, "mean_accuracy": float, "std_dev": float}
+                 }
         """
         diagnostics = dict()
         for i, param_set in enumerate(self.params_grid):
             formatted_str = ", ".join(f"{key}={value}" for key, value in param_set.items())
-            diagnostics[formatted_str] = {"mean_error": self.mean_stats[i]["mean_error"], "mean_accuracy": self.mean_stats[i]["mean_accuracy"], "std_dev": self.mean_stats[i]["std_dev"]}
+            diagnostics[formatted_str] = self.mean_stats[i]
         return diagnostics
