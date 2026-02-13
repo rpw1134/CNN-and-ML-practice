@@ -57,7 +57,7 @@ if __name__ == "__main__":
     )
 
     # Train model
-    hyperparams = Hyperparameters(learning_rate=0.1, num_training_iterations=2000)
+    hyperparams = Hyperparameters(learning_rate=0.1, epochs=2000, regularizer=None, training_method="gradient_descent")
     model = SoftmaxRegressionModel(hyperparams)
     model.fit(X, y)
 

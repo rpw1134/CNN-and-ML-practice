@@ -166,7 +166,7 @@ def plot_polynomial_data():
     print(f"\nDataset: {X.shape[0]} samples (quadratic relationship)")
 
     # Train linear model (will underfit)
-    hyperparams = Hyperparameters(learning_rate=0.1, num_training_iterations=500)
+    hyperparams = Hyperparameters(learning_rate=0.1, epochs=500, regularizer=None, training_method="gradient_descent")
     model = LinearRegressionModel(hyperparams)
     model.fit(X, y)
 

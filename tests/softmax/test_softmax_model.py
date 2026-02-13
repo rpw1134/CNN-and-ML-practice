@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     # Train the model
     print("\n2. Training SoftmaxRegressionModel...")
-    hyperparams = Hyperparameters(learning_rate=0.1, num_training_iterations=2000)
+    hyperparams = Hyperparameters(learning_rate=0.1, epochs=2000, regularizer=None, training_method="gradient_descent")
     model = SoftmaxRegressionModel(hyperparams)
     model.fit(X, y)
     print("   Training complete!")

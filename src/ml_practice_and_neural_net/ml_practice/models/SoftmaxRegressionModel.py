@@ -17,8 +17,9 @@ class SoftmaxRegressionModel(BaseModel):
     It optimizes parameters using gradient descent with categorical cross-entropy loss.
 
     Parameters:
-        hyperparameters (Hyperparameters): Training hyperparameters such as learning rate and iterations.
-        model_data (ModelData | None): Optional metadata including regularization type and training method.
+        hyperparameters (Hyperparameters): Training hyperparameters including learning rate, epochs,
+                                           regularization strategy, and training method.
+        model_data (ModelData | None): Optional metadata (currently unused, kept for backward compatibility).
 
     Attributes:
         weights (NDArray): Learned model parameters (set after calling fit())
@@ -27,9 +28,8 @@ class SoftmaxRegressionModel(BaseModel):
         index_to_categories (dict): Mapping from class indices to original category labels
 
     Example:
-        >>> hyperparams = Hyperparameters(learning_rate=0.01, num_training_iterations=1000)
-        >>> model_data = ModelData(given_data=X_train, labels=y_train, regularizer="l2", training_method="gradient_descent")
-        >>> model = SoftmaxRegressionModel(hyperparams, model_data)
+        >>> hyperparams = Hyperparameters(learning_rate=0.01, epochs=1000, regularizer="l2", training_method="gradient_descent")
+        >>> model = SoftmaxRegressionModel(hyperparams)
         >>> model.fit(X_train, y_train)
         >>> predictions = model.predict(X_test)  # Returns original category labels
         >>> train_loss = model.evaluate_cce_training_loss()

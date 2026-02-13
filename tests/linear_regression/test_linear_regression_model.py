@@ -52,7 +52,9 @@ if __name__ == "__main__":
     print("\n2. Training LinearRegressionModel (no regularization)...")
     hyperparams = Hyperparameters(
         learning_rate=0.1,
-        num_training_iterations=1000
+        epochs=1000,
+        regularizer=None,
+        training_method="gradient_descent"
     )
     model = LinearRegressionModel(hyperparams)
     model.fit(X, y)
@@ -92,16 +94,12 @@ if __name__ == "__main__":
     print("\n5. Training LinearRegressionModel with L2 regularization...")
     hyperparams_l2 = Hyperparameters(
         learning_rate=0.1,
-        num_training_iterations=1000,
+        epochs=1000,
+        regularizer="l2",
+        training_method="gradient_descent",
         lambda_reg=0.1
     )
-    model_data_l2 = ModelData(
-        given_data=X,
-        labels=y,
-        regularizer="l2",
-        training_method="gradient_descent"
-    )
-    model_l2 = LinearRegressionModel(hyperparams_l2, model_data_l2)
+    model_l2 = LinearRegressionModel(hyperparams_l2)
     model_l2.fit(X, y)
     print("   Training complete!")
     print(f"\n   Learned parameters (with L2):")

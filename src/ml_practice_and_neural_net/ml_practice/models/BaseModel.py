@@ -20,21 +20,21 @@ class BaseModel(ABC):
         Initialize the base model with dataclass-based training configuration.
 
         Args:
-            hyperparameters: Training hyperparameters (learning rate, iterations, regularization strength, etc.).
-            model_data: Optional training metadata including regularization type and training method.
+            hyperparameters: Training hyperparameters (learning rate, epochs, regularization strategy, training method, etc.).
+            model_data: Optional training metadata (currently unused, kept for backward compatibility).
         """
         self.hyperparameters = hyperparameters
         self.model_data = model_data
         self.learning_rate = hyperparameters.learning_rate
-        self.training_iterations = hyperparameters.num_training_iterations
+        self.training_iterations = hyperparameters.epochs
         self.weights: Optional[NDArray] = None
         self.training_set: Tuple = ()
         self.testing_set: Tuple = ()
 
-        reg_choice = model_data.regularizer if model_data else None
+        reg_choice = hyperparameters.regularizer
         self.reg_technique = regularization_map[reg_choice] if reg_choice else None
         self.lambda_reg = hyperparameters.lambda_reg
-        self.training_method = model_data.training_method if model_data else None
+        self.training_method = hyperparameters.training_method
 
     @abstractmethod
     def fit(self, X: NDArray, y: NDArray) -> "BaseModel":

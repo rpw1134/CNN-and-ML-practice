@@ -10,8 +10,6 @@ class ModelData:
 
     Hyperparameters such as learning rate, number of training iterations, and regularization strength are not included here, as they are defined separately in a Hyperparameters data class.
     """
-
     given_data: NDArray
     labels: NDArray
-    regularizer: Literal["l1", "l2", "elastic_net"] | None           # The regularization technique to apply during training.
-    training_method: Literal["gradient_descent", "minibatch"] | None # The optimization method. Will extend to Adam, RMSProp, etc. in the future.
+    model_name: str = "linear"
