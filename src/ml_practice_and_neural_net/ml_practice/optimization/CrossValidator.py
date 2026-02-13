@@ -1,6 +1,4 @@
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
-from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
-from ..models import model_map
+from ..models import BaseModel
 import numpy as np
 from numpy.typing import NDArray
 
@@ -10,11 +8,10 @@ class CrossValidator:
     # it will split the dataset into k
     # it will take all possible k-1, 1 splits and train the given model on the k-1 and test it on the 1
     # will store these results and return the average of the k results
-    def __init__(self, model: ModelData, hyperparams: Hyperparameters, k: int):
-        self.model = model_map[model.model_name](hyperparams)
-        self.hyperparams = hyperparams
-        self.data: NDArray = model.given_data
-        self.labels: NDArray = model.labels
+    def __init__(self, model: BaseModel, data: NDArray, labels: NDArray, k: int):
+        self.model = model
+        self.data: NDArray = data
+        self.labels: NDArray = labels
         self.k = k
         self.errors = []
         self.mean_error = None
@@ -50,7 +47,7 @@ class CrossValidator:
         return self
 
 
-    def get_metrics_mean_metrics(self):
+    def get_mean_metrics(self):
         """
         Calculate and return the mean error, mean accuracy, and standard deviation of errors across all folds, or return them if previously calculated.
         :return: A dictionary containing the mean error, mean accuracy, and standard deviation of errors across all folds.
