@@ -60,10 +60,10 @@ if __name__ == "__main__":
 
     # Loss values
     print("\n4. Loss values:")
-    train_loss = model.evaluate_cce_training_loss()
-    test_loss = model.evaluate_cce_testing_loss()
+    train_loss = model.training_cce()
+    eval_loss = model.evaluate_cce(X, y)
     print(f"   Training loss: {train_loss:.6f}")
-    print(f"   Testing loss:  {test_loss:.6f}")
+    print(f"   Evaluate loss: {eval_loss:.6f}")
 
     print("\n" + "="*60)
     if accuracy >= 99.0:

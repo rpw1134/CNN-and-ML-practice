@@ -85,10 +85,10 @@ if __name__ == "__main__":
 
     # Loss values
     print("\n4. Loss values (MSE):")
-    train_loss = model.evaluate_mse_training_loss()
-    test_loss = model.evaluate_mse_testing_loss()
+    train_loss = model.training_mse()
+    eval_loss = model.evaluate_mse(X, y)
     print(f"   Training loss: {train_loss:.6f}")
-    print(f"   Testing loss:  {test_loss:.6f}")
+    print(f"   Evaluate loss: {eval_loss:.6f}")
 
     # Train model WITH L2 regularization
     print("\n5. Training LinearRegressionModel with L2 regularization...")

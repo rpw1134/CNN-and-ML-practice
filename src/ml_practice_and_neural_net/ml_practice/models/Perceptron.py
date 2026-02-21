@@ -22,4 +22,4 @@ class Perceptron(BaseModel):
 
 
     def predict(self, X):
-        raise NotImplementedError("Perceptron model is not implemented yet.")
+        return np.sign(X @ self.weights)

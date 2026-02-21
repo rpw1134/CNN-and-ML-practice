@@ -3,7 +3,6 @@ Example demonstrating the BaseModel abstract class usage.
 
 This shows how BaseModel provides:
 1. Abstract methods (fit, predict) that must be implemented by subclasses
-2. A concrete evaluate_error() method that can be used by all models
 """
 import sys
 from pathlib import Path
@@ -32,10 +31,6 @@ log_model = LogisticRegressionModel(hyperparams)
 soft_model = SoftmaxRegressionModel(hyperparams)
 print(f"\n✓ Successfully created LogisticRegressionModel instance")
 print(f"✓ Successfully created SoftmaxRegressionModel instance")
-
-# Example: Models have the evaluate_error method from BaseModel
-print(f"\n✓ LogisticRegressionModel has evaluate_error: {hasattr(log_model, 'evaluate_error')}")
-print(f"✓ SoftmaxRegressionModel has evaluate_error: {hasattr(soft_model, 'evaluate_error')}")
 
 # Example: Models have abstract methods implemented
 print(f"\n✓ LogisticRegressionModel has fit: {hasattr(log_model, 'fit')}")
