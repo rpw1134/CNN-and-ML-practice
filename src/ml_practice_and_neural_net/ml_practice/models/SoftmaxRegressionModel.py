@@ -1,5 +1,5 @@
 from ml_practice_and_neural_net.ml_practice.data_management.encoding import convert_to_one_hot
-from ml_practice_and_neural_net.ml_practice.data_management.general import add_data_bias_term, split_data
+from ml_practice_and_neural_net.ml_practice.data_management.general import add_data_bias_term
 import numpy as np
 from .BaseModel import BaseModel
 from ..loss import cce
@@ -24,15 +24,15 @@ class SoftmaxRegressionModel(BaseModel):
     Attributes:
         weights (NDArray): Learned model parameters (set after calling fit())
         training_set (tuple): Training data and labels
-        testing_set (tuple): Testing data and labels
         index_to_categories (dict): Mapping from class indices to original category labels
 
     Example:
         >>> hyperparams = Hyperparameters(learning_rate=0.01, epochs=1000, regularizer="l2", training_method="gradient_descent")
         >>> model = SoftmaxRegressionModel(hyperparams)
-        >>> model.fit(X_train, y_train)
+        >>> model.fit(X, y)
         >>> predictions = model.predict(X_test)  # Returns original category labels
-        >>> train_loss = model.evaluate_cce_training_loss()
+        >>> train_loss = model.training_cce()
+        >>> eval_loss = model.evaluate_cce(X_test, y_test)
     """
     def __init__(self, hyperparameters: Hyperparameters, model_data: ModelData | None = None):
         super().__init__(hyperparameters, model_data)
@@ -42,20 +42,17 @@ class SoftmaxRegressionModel(BaseModel):
         if X.ndim != 2:
             X = X.reshape(X.shape[0], 1)
 
-        # data transformations
-        X = add_data_bias_term(X)
-        one_hot_labels = convert_to_one_hot(y)
-
         # Look up for predictions
         categories = np.unique(y)
         self.index_to_categories = {i: cat for i, cat in enumerate(categories)}
 
-        # sets in terms of one hot labels
-        training_data, training_labels, testing_data, testing_labels = split_data(X, one_hot_labels)
-        self.testing_set = (testing_data, testing_labels)
-        self.training_set = (training_data, training_labels)
+        self.training_set = (X, y)
 
-        _, gradient = cce.build(training_data, training_labels)
+        # data transformations
+        X = add_data_bias_term(X)
+        one_hot_labels = convert_to_one_hot(y)
+
+        _, gradient = cce.build(X, one_hot_labels)
         _, regularization_gradient = self.reg_technique(self.lambda_reg) if self.reg_technique else (None, lambda x: np.zeros_like(x))
 
         # initialize parameters with small random values, shape should be CxD where C is number of categories and D is number of features (including bias)
@@ -74,9 +71,12 @@ class SoftmaxRegressionModel(BaseModel):
         index = np.argmax(logits, axis=1)
         return np.array([self.index_to_categories[i] for i in index])
 
-    def evaluate_cce_training_loss(self) -> float:
-        return self.evaluate_error(cce.build, use_training_set=True)
+    def evaluate_cce(self, X: NDArray, y: NDArray) -> float:
+        X_biased = add_data_bias_term(X)
+        one_hot = convert_to_one_hot(y)
+        loss_func, _ = cce.build(X_biased, one_hot)
+        return float(loss_func(self.weights))
 
-    def evaluate_cce_testing_loss(self) -> float:
-        return self.evaluate_error(cce.build, use_training_set=False)
+    def training_cce(self) -> float:
+        return self.evaluate_cce(*self.training_set)
 

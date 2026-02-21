@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Tuple, Optional
+from typing import Tuple, Optional
 from numpy.typing import NDArray
 
 from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
@@ -12,24 +12,20 @@ class BaseModel(ABC):
     Abstract base class for machine learning models.
 
     Subclasses must implement fit() and predict() methods.
-    The evaluate_error() method is provided as a concrete implementation.
     """
 
-    def __init__(self, hyperparameters: Hyperparameters, model_data: ModelData | None = None) -> None:
+    def __init__(self, hyperparameters: Hyperparameters) -> None:
         """
         Initialize the base model with dataclass-based training configuration.
 
         Args:
             hyperparameters: Training hyperparameters (learning rate, epochs, regularization strategy, training method, etc.).
-            model_data: Optional training metadata (currently unused, kept for backward compatibility).
         """
         self.hyperparameters = hyperparameters
-        self.model_data = model_data
         self.learning_rate = hyperparameters.learning_rate
         self.training_iterations = hyperparameters.epochs
         self.weights: Optional[NDArray] = None
         self.training_set: Tuple = ()
-        self.testing_set: Tuple = ()
 
         reg_choice = hyperparameters.regularizer
         self.reg_technique = regularization_map[reg_choice] if reg_choice else None
@@ -63,35 +59,4 @@ class BaseModel(ABC):
         """
         pass
 
-    def evaluate_error(
-        self,
-        loss_builder: Callable[[NDArray, NDArray], Tuple[Callable[[NDArray], float], Callable[[NDArray], NDArray]]],
-        use_training_set: bool = True
-    ) -> float:
-        """
-        Evaluate the error on either the training or testing set.
-
-        Args:
-            loss_builder: A function that takes (X, y) and returns (loss_func, gradient_func)
-            use_training_set: If True, evaluate on training set; if False, evaluate on testing set
-
-        Returns:
-            The computed loss value
-
-        Raises:
-            ValueError: If the model hasn't been fitted yet or the requested dataset is empty
-        """
-        if self.weights is None:
-            raise ValueError("Model must be fitted before evaluating error")
-
-        dataset = self.training_set if use_training_set else self.testing_set
-
-        if not dataset or len(dataset) != 2:
-            raise ValueError(f"{'Training' if use_training_set else 'Testing'} set is empty or invalid")
-
-        data, labels = dataset
-        loss_func, _ = loss_builder(data, labels)
-        regularization_loss, _ = self.reg_technique(self.lambda_reg) if self.reg_technique else (lambda x: 0, lambda x: 0)
-        loss = loss_func(self.weights) + regularization_loss(self.weights)
-        return loss
 

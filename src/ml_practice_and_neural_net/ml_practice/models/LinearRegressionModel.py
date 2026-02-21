@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 
 from .BaseModel import BaseModel
 from ..loss import mse
-from ..data_management.general import split_data, add_data_bias_term
+from ..data_management.general import add_data_bias_term
 from ..optimization.gradient_descent import gradient_descent
 from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
@@ -24,14 +24,13 @@ class LinearRegressionModel(BaseModel):
     Attributes:
         weights (NDArray): Learned model parameters (set after calling fit())
         training_set (tuple): Training data and labels
-        testing_set (tuple): Testing data and labels
-
     Example:
         >>> hyperparams = Hyperparameters(learning_rate=0.01, epochs=1000, regularizer="l2", training_method="gradient_descent")
         >>> model = LinearRegressionModel(hyperparams)
-        >>> model.fit(X_train, y_train)
+        >>> model.fit(X, y)
         >>> predictions = model.predict(X_test)
-        >>> train_loss = model.evaluate_mse_training_loss()
+        >>> train_loss = model.training_mse()
+        >>> eval_loss = model.evaluate_mse(X_test, y_test)
     """
     def fit(self, X: NDArray, y: NDArray) -> "LinearRegressionModel":
         """
@@ -51,12 +50,10 @@ class LinearRegressionModel(BaseModel):
         if y.shape[0] != X.shape[0]:
             raise ValueError("Number of samples in X and y must be the same. Maybe your labels need to be transposed?")
 
+        self.training_set = (X, y)
         X = add_data_bias_term(X)
-        training_data, training_labels, testing_data, testing_labels = split_data(X, y)
-        self.testing_set = (testing_data, testing_labels)
-        self.training_set = (training_data, training_labels)
 
-        _, gradient_func = mse.build(training_data, training_labels)
+        _, gradient_func = mse.build(X, y)
         _, regularization_gradient = self.reg_technique(self.lambda_reg) if self.reg_technique else (None, lambda x: np.zeros_like(x))
 
         initial_params = np.random.randn(X.shape[1], 1)
@@ -85,23 +82,14 @@ class LinearRegressionModel(BaseModel):
         predictions = X @ self.weights
         return predictions
 
-    def evaluate_mse_training_loss(self) -> float:
-        """
-        Evaluate the mean squared error on the training set.
+    def evaluate_mse(self, X: NDArray, y: NDArray) -> float:
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+        y_pred = self.predict(X)
+        return float(np.mean((y - y_pred) ** 2))
 
-        Returns:
-            MSE loss value including regularization penalty if applicable
-        """
-        return self.evaluate_error(mse.build, use_training_set=True)
-
-    def evaluate_mse_testing_loss(self) -> float:
-        """
-        Evaluate the mean squared error on the testing set.
-
-        Returns:
-            MSE loss value including regularization penalty if applicable
-        """
-        return self.evaluate_error(mse.build, use_training_set=False)
+    def training_mse(self) -> float:
+        return self.evaluate_mse(*self.training_set)
 
     def calculate_r2_score(self, X: NDArray, y: NDArray) -> float:
         """
