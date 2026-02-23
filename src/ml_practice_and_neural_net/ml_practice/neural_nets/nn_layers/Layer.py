@@ -37,6 +37,10 @@ class Layer:
         self.sparsity = params.sparsity
         self.sparsity_mask = (np.random.rand(self.output_dim, self.input_dim) < self.sparsity) if self.sparsity < 1.0 else None
 
+        # needed if output and input dimensions are not equal. projects input onto output so we can add residuals
+        self.use_residuals = params.use_residuals
+        self.projection_mask = np.ones(shape=(self.output_dim, self.input_dim))
+
     def feed_forward(self, input_vector: NDArray) -> NDArray:
         """Run one forward pass, caching input/z/a for backprop.
 
@@ -49,6 +53,8 @@ class Layer:
         self.z = (self.weights @ input_vector + self.biases) if not self.sparsity_mask \
             else (self.weights * self.sparsity_mask) @ input_vector + self.biases
         self.a = self.activation(self.z)
+        if self.use_residuals:
+            self.a += self.projection_mask @ input_vector
         return self.a
 
     def backprop(self, prev_layer_gradient: NDArray) -> NDArray:
@@ -68,8 +74,12 @@ class Layer:
 
         bias_update = delta  # dL/db, (output_dim,)
 
-        effective_weight_update = weight_update * self.sparsity  # (output_dim, input_dim)
-        input_gradient = delta @ effective_weight_update          # (output_dim,) @ (output_dim, input_dim) -> (input_dim,)
+        effective_weights = self.weights if self.sparsity_mask is None else self.weights * self.sparsity_mask
+        input_gradient = delta @ effective_weights  # dL/dx = delta @ W, shape: (input_dim,)
+        if self.use_residuals:
+            input_gradient += prev_layer_gradient @ self.projection_mask
+            projection_update = np.outer(prev_layer_gradient,self.input)  # dL/d(projection_mask): (output_dim, input_dim)
+            self.projection_mask -= projection_update
 
         self.weights -= weight_update
         self.biases -= bias_update
