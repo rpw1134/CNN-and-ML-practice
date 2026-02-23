@@ -1,3 +1,9 @@
+from ml_practice_and_neural_net.ml_practice.data_classes.NNParameters import NNLayerParameters
+from ml_practice_and_neural_net.ml_practice.neural_nets.nn_activations import activation_map
+from ml_practice_and_neural_net.ml_practice.weight_initializers import initializers_map
+import numpy as np
+
+
 class DenseLayer:
     # This is for a fully connected layer in a NN
     # Needs a feed forward method. This method should receive a vector representing the previous output,
@@ -6,4 +12,23 @@ class DenseLayer:
     # backprop method takes in the gradient of the loss with respect to the output of this layer, and computes the gradient of the loss with respect to the input of this layer, as well as the gradients with respect to weights and biases for updating
     # derivation: del_c/del_w = del_c/del_a (which is del_c/del_out-1) * del_a/del_z (which is activation_derivative wrt pre-activation output) * del_z/del_w (which is input)
     # del_c/del_b is the same but del_z/del_b is just 1, and del_c/del_input is del_c/del_a * del_a/del_z * del_z/del_input (which is weights)
-    pass
+    def __init__(self, params: NNLayerParameters):
+        # width is also the output dim for a dense layer
+        self.width = self.output_dim = params.width\
+
+        # this comes from the previous layer width (or if sparse, the number of neurons forwarded). Will be handled by neural net init
+        self.input_dim = params.input_dim
+
+        # self-explanatory
+        self.activation, self.activation_derivative = activation_map[params.activation]()
+
+        # weights = output by input, biases = output by 1
+        self.weights = initializers_map[params.weight_init](output_dim = self.output_dim, input_dim = self.input_dim)
+        self.biases = np.zeros(shape=(self.output_dim,))
+
+        # pre-activation output, post-activation output, and input from previous iteration
+        self.z = None
+        self.a = None
+        self.input = None
+
+
