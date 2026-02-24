@@ -5,6 +5,12 @@ from ml_practice_and_neural_net.ml_practice.weight_initializers import initializ
 import numpy as np
 
 
+# need to include an optimizer here. This will be ADAM and will keep track of each weight vector and bias vector's first and second moment estimates, as well as the timestep for bias correction.
+# The optimizer will be updated during backprop and will apply the updates to the weights and biases accordingly.
+# needs one momentum matrix, one velocity matrix, one momentum vector (bias), one velocity vector (bias), and a timestep counter.
+# The momentum and velocity matrices will be the same shape as the weights and biases, and will be updated using the ADAM update rules during backprop.
+# The timestep counter will be incremented each time backprop is called, and will be used for bias correction in the ADAM updates.
+
 class Layer:
     """Fully connected (dense) neural network layer with optional sparsity masking.
 
