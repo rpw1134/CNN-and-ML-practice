@@ -12,7 +12,7 @@ from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation i
     generate_polynomial_regression_data
 )
 from ml_practice_and_neural_net.ml_practice.models.LinearRegressionModel import LinearRegressionModel
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 
 
 def plot_1d_regression():
@@ -33,7 +33,7 @@ def plot_1d_regression():
     print(f"True parameters: intercept={true_params[0,0]:.3f}, slope={true_params[1,0]:.3f}")
 
     # Train model
-    hyperparams = Hyperparameters(learning_rate=0.1, num_training_iterations=500)
+    hyperparams = ModelHyperparameters(learning_rate=0.1, num_training_iterations=500)
     model = LinearRegressionModel(hyperparams)
     model.fit(X, y)
 
@@ -93,7 +93,7 @@ def plot_2d_regression():
     print(f"True parameters: {true_params.flatten()}")
 
     # Train model
-    hyperparams = Hyperparameters(learning_rate=0.1, num_training_iterations=1000)
+    hyperparams = ModelHyperparameters(learning_rate=0.1, num_training_iterations=1000)
     model = LinearRegressionModel(hyperparams)
     model.fit(X, y)
 
@@ -166,7 +166,7 @@ def plot_polynomial_data():
     print(f"\nDataset: {X.shape[0]} samples (quadratic relationship)")
 
     # Train linear model (will underfit)
-    hyperparams = Hyperparameters(learning_rate=0.1, epochs=500, regularizer=None, training_method="gradient_descent")
+    hyperparams = ModelHyperparameters(learning_rate=0.1, epochs=500, regularizer=None, training_method="gradient_descent")
     model = LinearRegressionModel(hyperparams)
     model.fit(X, y)
 

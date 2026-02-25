@@ -5,7 +5,7 @@ from .BaseModel import BaseModel
 from ..loss import cce
 from ..optimization.gradient_descent import gradient_descent
 from numpy.typing import NDArray
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
 
 
@@ -17,7 +17,7 @@ class SoftmaxRegressionModel(BaseModel):
     It optimizes parameters using gradient descent with categorical cross-entropy loss.
 
     Parameters:
-        hyperparameters (Hyperparameters): Training hyperparameters including learning rate, epochs,
+        hyperparameters (ModelHyperparameters): Training hyperparameters including learning rate, epochs,
                                            regularization strategy, and training method.
         model_data (ModelData | None): Optional metadata (currently unused, kept for backward compatibility).
 
@@ -27,14 +27,14 @@ class SoftmaxRegressionModel(BaseModel):
         index_to_categories (dict): Mapping from class indices to original category labels
 
     Example:
-        >>> hyperparams = Hyperparameters(learning_rate=0.01, epochs=1000, regularizer="l2", training_method="gradient_descent")
+        >>> hyperparams = ModelHyperparameters(learning_rate=0.01, epochs=1000, regularizer="l2", training_method="gradient_descent")
         >>> model = SoftmaxRegressionModel(hyperparams)
         >>> model.fit(X, y)
         >>> predictions = model.predict(X_test)  # Returns original category labels
         >>> train_loss = model.training_cce()
         >>> eval_loss = model.evaluate_cce(X_test, y_test)
     """
-    def __init__(self, hyperparameters: Hyperparameters, model_data: ModelData | None = None):
+    def __init__(self, hyperparameters: ModelHyperparameters, model_data: ModelData | None = None):
         super().__init__(hyperparameters, model_data)
         self.index_to_categories = None
 

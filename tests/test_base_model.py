@@ -9,12 +9,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from ml_practice_and_neural_net.ml_practice.models import BaseModel, LogisticRegressionModel, SoftmaxRegressionModel
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 import numpy as np
 from abc import ABC
 
 # Example: BaseModel cannot be instantiated directly
-hyperparams = Hyperparameters(learning_rate=0.01, epochs=100, regularizer=None, training_method="gradient_descent")
+hyperparams = ModelHyperparameters(learning_rate=0.01, epochs=100, regularizer=None, training_method="gradient_descent")
 try:
     model = BaseModel(hyperparams)
     print("ERROR: BaseModel should not be instantiable!")
@@ -26,7 +26,7 @@ print(f"\n✓ LogisticRegressionModel is subclass of BaseModel: {issubclass(Logi
 print(f"✓ SoftmaxRegressionModel is subclass of BaseModel: {issubclass(SoftmaxRegressionModel, BaseModel)}")
 
 # Example: Create instances of concrete models
-hyperparams = Hyperparameters(learning_rate=0.01, epochs=100, regularizer=None, training_method="gradient_descent")
+hyperparams = ModelHyperparameters(learning_rate=0.01, epochs=100, regularizer=None, training_method="gradient_descent")
 log_model = LogisticRegressionModel(hyperparams)
 soft_model = SoftmaxRegressionModel(hyperparams)
 print(f"\n✓ Successfully created LogisticRegressionModel instance")

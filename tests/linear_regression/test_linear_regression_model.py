@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_linear_regression_data
 from ml_practice_and_neural_net.ml_practice.models.LinearRegressionModel import LinearRegressionModel
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
 
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     # Train the model WITHOUT regularization
     print("\n2. Training LinearRegressionModel (no regularization)...")
-    hyperparams = Hyperparameters(
+    hyperparams = ModelHyperparameters(
         learning_rate=0.1,
         epochs=1000,
         regularizer=None,
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # Train model WITH L2 regularization
     print("\n5. Training LinearRegressionModel with L2 regularization...")
-    hyperparams_l2 = Hyperparameters(
+    hyperparams_l2 = ModelHyperparameters(
         learning_rate=0.1,
         epochs=1000,
         regularizer="l2",

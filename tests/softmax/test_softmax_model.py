@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 import numpy as np
 from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_multiclass_linear_data
 from ml_practice_and_neural_net.ml_practice.models.SoftmaxRegressionModel import SoftmaxRegressionModel
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 
 
 def calculate_accuracy(y_true, y_pred):
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     # Train the model
     print("\n2. Training SoftmaxRegressionModel...")
-    hyperparams = Hyperparameters(learning_rate=0.1, epochs=2000, regularizer=None, training_method="gradient_descent")
+    hyperparams = ModelHyperparameters(learning_rate=0.1, epochs=2000, regularizer=None, training_method="gradient_descent")
     model = SoftmaxRegressionModel(hyperparams)
     model.fit(X, y)
     print("   Training complete!")

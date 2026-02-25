@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Optional
 from numpy.typing import NDArray
 
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
 from ml_practice_and_neural_net.ml_practice.regularization import regularization_map
 
@@ -14,7 +14,7 @@ class BaseModel(ABC):
     Subclasses must implement fit() and predict() methods.
     """
 
-    def __init__(self, hyperparameters: Hyperparameters) -> None:
+    def __init__(self, hyperparameters: ModelHyperparameters) -> None:
         """
         Initialize the base model with dataclass-based training configuration.
 

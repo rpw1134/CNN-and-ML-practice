@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_multiclass_linear_data
 from ml_practice_and_neural_net.ml_practice.models.SoftmaxRegressionModel import SoftmaxRegressionModel
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 
 
 def plot_decision_boundaries(model, X, y, title="Decision Boundaries"):
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     )
 
     # Train model
-    hyperparams = Hyperparameters(learning_rate=0.1, epochs=2000, regularizer=None, training_method="gradient_descent")
+    hyperparams = ModelHyperparameters(learning_rate=0.1, epochs=2000, regularizer=None, training_method="gradient_descent")
     model = SoftmaxRegressionModel(hyperparams)
     model.fit(X, y)
 

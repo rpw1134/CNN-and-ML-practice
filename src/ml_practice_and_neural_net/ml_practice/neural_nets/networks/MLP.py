@@ -1,3 +1,11 @@
+from typing import List, Dict
+
+from ml_practice_and_neural_net.ml_practice.data_classes.NNHyperparameters import NNHyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.NNLayerParameters import NNLayerParameters
+from ml_practice_and_neural_net.ml_practice.data_classes.NNParameters import NNParameters
+from ml_practice_and_neural_net.ml_practice.loss import loss_map
+
+
 class MLP:
     # this class will take in a list of layer configs (or maybe some shorthand, idk)
     # then construct the layer objects, link them together via a list
@@ -8,4 +16,11 @@ class MLP:
     # if at any point validation doesn't increase for to many iterations, stop training and return the model with the best validation error (need to track best weights and biases)
 
 
-    pass
+    def __init__(self, layer_configs: List[NNLayerParameters], hyperparameters: NNHyperparameters, params: NNParameters):
+        self.layers = layer_configs
+        self.learning_rate = hyperparameters.learning_rate
+        self.num_iterations = hyperparameters.num_iterations
+        self.regularization_strength = hyperparameters.regularization_strength
+        self.regularization_type = hyperparameters.regularization_type
+        self.batch_size = hyperparameters.batch_size
+        self.loss_builder = loss_map[params.loss]

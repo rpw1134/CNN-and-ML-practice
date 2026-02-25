@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_simple_linear_data
 from ml_practice_and_neural_net.ml_practice.models.Perceptron import Perceptron
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_management.general import add_data_bias_term
 
 
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     # Train the perceptron
     print("\n3. Training Perceptron...")
-    hyperparameters = Hyperparameters(
+    hyperparameters = ModelHyperparameters(
         learning_rate=0.1,
         epochs=100,
         regularizer=None,

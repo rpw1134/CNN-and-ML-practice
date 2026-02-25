@@ -4,7 +4,7 @@ from typing_extensions import Literal
 
 
 @dataclass(frozen=True)
-class Hyperparameters:
+class ModelHyperparameters:
     """
     A data class to encapsulate all hyperparameters required for training a machine learning model.
     This includes the learning rate, number of training iterations, regularization strength, and parameters for optimizers like Adam.

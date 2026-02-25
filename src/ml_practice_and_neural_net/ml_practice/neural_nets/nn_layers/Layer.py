@@ -1,5 +1,5 @@
 from numpy.typing import NDArray
-from ml_practice_and_neural_net.ml_practice.data_classes.NNParameters import NNLayerParameters
+from ml_practice_and_neural_net.ml_practice.data_classes.NNLayerParameters import NNLayerParameters
 from ml_practice_and_neural_net.ml_practice.neural_nets.nn_activations import activation_map
 from ml_practice_and_neural_net.ml_practice.weight_initializers import initializers_map
 import numpy as np

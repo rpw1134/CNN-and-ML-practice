@@ -6,7 +6,7 @@ from ..data_management.transformations import logistic
 from ..loss import ce
 from ..data_management.general import add_data_bias_term
 from ..optimization.gradient_descent import gradient_descent
-from ml_practice_and_neural_net.ml_practice.data_classes.Hyperparameters import Hyperparameters
+from ml_practice_and_neural_net.ml_practice.data_classes.ModelHyperparameters import ModelHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.ModelData import ModelData
 
 
@@ -18,7 +18,7 @@ class LogisticRegressionModel(BaseModel):
     It optimizes parameters using gradient descent with cross-entropy loss.
 
     Parameters:
-        hyperparameters (Hyperparameters): Training hyperparameters including learning rate, epochs,
+        hyperparameters (ModelHyperparameters): Training hyperparameters including learning rate, epochs,
                                            regularization strategy, and training method.
         model_data (ModelData | None): Optional metadata (currently unused, kept for backward compatibility).
 
@@ -26,7 +26,7 @@ class LogisticRegressionModel(BaseModel):
         weights (NDArray): Learned model parameters (set after calling fit())
         training_set (tuple): Training data and labels
     Example:
-        >>> hyperparams = Hyperparameters(learning_rate=0.01, epochs=1000, regularizer="l2", training_method="gradient_descent")
+        >>> hyperparams = ModelHyperparameters(learning_rate=0.01, epochs=1000, regularizer="l2", training_method="gradient_descent")
         >>> model = LogisticRegressionModel(hyperparams)
         >>> model.fit(X, y)
         >>> predictions = model.predict(X_test)
