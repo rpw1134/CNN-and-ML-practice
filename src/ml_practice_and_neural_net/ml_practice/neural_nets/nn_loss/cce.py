@@ -17,12 +17,8 @@ def loss(predictions: NDArray, targets: NDArray) -> float:
 
 def gradient(predictions: NDArray, targets: NDArray) -> NDArray:
     """dL/dA = (softmax(A) - Y) / batch_size."""
-    return (_softmax(predictions) - targets) / predictions.shape[0]
+    return _softmax(predictions) - targets
 
 
 def loss_and_grad(predictions: NDArray, targets: NDArray) -> Tuple[float, NDArray]:
-    probs = _softmax(predictions)
-    probs_clipped = np.clip(probs, 1e-15, 1.0)
-    l = float(-np.mean(np.sum(targets * np.log(probs_clipped), axis=1)))
-    grad = (probs - targets) / predictions.shape[0]
-    return l, grad
+    return loss(predictions, targets), gradient(predictions, targets)

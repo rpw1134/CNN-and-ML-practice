@@ -3,7 +3,7 @@ from typing import List, Dict
 from ml_practice_and_neural_net.ml_practice.data_classes.NNHyperparameters import NNHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNLayerParameters import NNLayerParameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNParameters import NNParameters
-from ml_practice_and_neural_net.ml_practice.loss import loss_map
+from ml_practice_and_neural_net.ml_practice.neural_nets.nn_loss import nn_loss_map as loss_map
 from ..nn_layers.Layer import Layer
 
 import numpy as np
@@ -28,7 +28,7 @@ class MLP:
         self.batch_size = hyperparameters.batch_size
 
         # I think I need to reconsider this, as the layer itself outputs a prediction. We are no longer doing loss with respect to weights
-        self.loss_builder = loss_map[params.loss]
+        self.loss_function, self.loss_gradient = loss_map[params.loss]
 
     def feed_forward(self, X: NDArray) -> NDArray:
         output = X

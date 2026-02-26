@@ -15,7 +15,7 @@ def loss(predictions: NDArray, targets: NDArray) -> float:
 
 def gradient(predictions: NDArray, targets: NDArray) -> NDArray:
     """dL/dA = (sigmoid(A) - y) / batch_size."""
-    return (_sigmoid(predictions) - targets) / predictions.shape[0]
+    return _sigmoid(predictions) - targets
 
 
 def loss_and_grad(predictions: NDArray, targets: NDArray) -> Tuple[float, NDArray]:
