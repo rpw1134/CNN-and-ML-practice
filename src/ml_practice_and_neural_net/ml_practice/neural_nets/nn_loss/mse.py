@@ -8,5 +8,3 @@ def loss(predictions: NDArray, targets: NDArray) -> float:
 def gradient(predictions: NDArray, targets: NDArray) -> NDArray:
     return predictions - targets  # (batch_size, output_dim), per-sample gradients
 
-def loss_and_grad(predictions: NDArray, targets: NDArray) -> Tuple[float, NDArray]:
-    return loss(predictions, targets), gradient(predictions, targets)

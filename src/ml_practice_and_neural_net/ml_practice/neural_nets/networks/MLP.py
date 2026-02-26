@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from ml_practice_and_neural_net.ml_practice.data_classes.NNHyperparameters import NNHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNLayerParameters import NNLayerParameters
@@ -26,8 +26,6 @@ class MLP:
         self.regularization_strength = hyperparameters.regularization_strength
         self.regularization_type = hyperparameters.regularization_type
         self.batch_size = hyperparameters.batch_size
-
-        # I think I need to reconsider this, as the layer itself outputs a prediction. We are no longer doing loss with respect to weights
         self.loss_function, self.loss_gradient = loss_map[params.loss]
 
     def feed_forward(self, X: NDArray) -> NDArray:
@@ -41,5 +39,7 @@ class MLP:
         return output
 
     def compute_loss(self, predictions: NDArray, Y: NDArray) -> float:
+        return self.loss_function(predictions, Y)
 
-        pass
+    def compute_gradients(self, predictions: NDArray, Y: NDArray) -> NDArray:
+        return self.loss_gradient(predictions, Y)

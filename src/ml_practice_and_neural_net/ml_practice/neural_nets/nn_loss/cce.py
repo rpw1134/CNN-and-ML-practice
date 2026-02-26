@@ -18,7 +18,3 @@ def loss(predictions: NDArray, targets: NDArray) -> float:
 def gradient(predictions: NDArray, targets: NDArray) -> NDArray:
     """dL/dA = (softmax(A) - Y) / batch_size."""
     return _softmax(predictions) - targets
-
-
-def loss_and_grad(predictions: NDArray, targets: NDArray) -> Tuple[float, NDArray]:
-    return loss(predictions, targets), gradient(predictions, targets)
