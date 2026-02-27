@@ -39,7 +39,10 @@ class MLP:
         return output
 
     def compute_loss(self, predictions: NDArray, Y: NDArray) -> float:
+        """Compute the loss given predictions and true labels."""
         return self.loss_function(predictions, Y)
 
     def compute_gradients(self, predictions: NDArray, Y: NDArray) -> NDArray:
+        """Compute the gradient of the loss with respect to the predictions."""
+
         return self.loss_gradient(predictions, Y)
