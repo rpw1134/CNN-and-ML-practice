@@ -11,3 +11,5 @@ class NNHyperparameters:
     regularization_strength: float = 0.01
     regularization_type: str = "l2"  # Options could include "l1", "l2", "dropout", etc. for different regularization techniques
     batch_size: int = 32
+    epochs: int = 100
+    early_stopping_patience: int = 10
