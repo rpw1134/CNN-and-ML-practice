@@ -401,3 +401,73 @@ if __name__ == "__main__":
     print(f"  Target mean: {np.mean(y_poly):.2f}, std: {np.std(y_poly):.2f}")
 
 
+def generate_circle_data(n_samples: int = 1000, radius: float = 1.0, noise: float = 0.05,
+                         random_state: int = 42) -> Tuple[NDArray, NDArray]:
+    """
+    Balanced binary classification dataset: points inside a circle vs. outside.
+
+    Parameters:
+    -----------
+    n_samples : int
+        Total number of samples (split evenly between inside and outside).
+    radius : float
+        Radius of the circle boundary.
+    noise : float
+        Standard deviation of Gaussian noise added to each point.
+    random_state : int
+        Random seed for reproducibility.
+
+    Returns:
+    --------
+    X : NDArray of shape (n_samples, 2)
+        2D feature matrix.
+    y : NDArray of shape (n_samples,)
+        Binary labels — 1 = inside, 0 = outside.
+    """
+    rng = np.random.RandomState(random_state)
+    half = n_samples // 2
+
+    # inside: uniform area sampling in polar coords
+    r_in = rng.uniform(0, radius, half) ** 0.5 * radius
+    theta_in = rng.uniform(0, 2 * np.pi, half)
+    X_in = np.c_[r_in * np.cos(theta_in), r_in * np.sin(theta_in)]
+    X_in += rng.normal(0, noise, X_in.shape)
+
+    # outside: annulus from radius to 2*radius
+    r_out = rng.uniform(radius, 2.0 * radius, half) ** 0.5 * np.sqrt(2) * radius
+    r_out = np.clip(r_out, radius + 0.05, 2.5)
+    theta_out = rng.uniform(0, 2 * np.pi, half)
+    X_out = np.c_[r_out * np.cos(theta_out), r_out * np.sin(theta_out)]
+    X_out += rng.normal(0, noise, X_out.shape)
+
+    X = np.vstack([X_in, X_out])
+    y = np.array([1] * half + [0] * half)
+    perm = rng.permutation(n_samples)
+    return X[perm], y[perm]
+
+
+def generate_sine_data(n_samples: int = 800, noise: float = 0.05,
+                       random_state: int = 42) -> Tuple[NDArray, NDArray]:
+    """
+    Regression dataset: y = sin(x) + noise, x uniformly sampled from [-π, π].
+
+    Parameters:
+    -----------
+    n_samples : int
+        Number of samples.
+    noise : float
+        Standard deviation of Gaussian noise added to y.
+    random_state : int
+        Random seed for reproducibility.
+
+    Returns:
+    --------
+    X : NDArray of shape (n_samples, 1)
+        Input values.
+    y : NDArray of shape (n_samples, 1)
+        Noisy sine targets.
+    """
+    rng = np.random.RandomState(random_state)
+    x = rng.uniform(-np.pi, np.pi, n_samples)
+    y = np.sin(x) + rng.normal(0, noise, n_samples)
+    return x.reshape(-1, 1), y.reshape(-1, 1)

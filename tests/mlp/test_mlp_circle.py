@@ -20,34 +20,10 @@ from ml_practice_and_neural_net.ml_practice.neural_nets.networks.MLP import MLP
 from ml_practice_and_neural_net.ml_practice.data_classes.NNLayerParameters import NNLayerParameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNHyperparameters import NNHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNParameters import NNParameters
+from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_circle_data
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
-
-def generate_circle_data(n_samples: int = 1000, radius: float = 1.0, noise: float = 0.05,
-                          random_state: int = 42) -> tuple:
-    """Balanced dataset: n_samples/2 inside the circle, n_samples/2 outside."""
-    rng = np.random.RandomState(random_state)
-    half = n_samples // 2
-
-    # inside: sample in polar coords within [0, radius)
-    r_in = rng.uniform(0, radius, half) ** 0.5 * radius  # uniform area sampling
-    theta_in = rng.uniform(0, 2 * np.pi, half)
-    X_in = np.c_[r_in * np.cos(theta_in), r_in * np.sin(theta_in)]
-    X_in += rng.normal(0, noise, X_in.shape)
-
-    # outside: sample in annulus [radius, 2*radius)
-    r_out = rng.uniform(radius, 2.0 * radius, half) ** 0.5 * np.sqrt(2) * radius
-    r_out = np.clip(r_out, radius + 0.05, 2.5)
-    theta_out = rng.uniform(0, 2 * np.pi, half)
-    X_out = np.c_[r_out * np.cos(theta_out), r_out * np.sin(theta_out)]
-    X_out += rng.normal(0, noise, X_out.shape)
-
-    X = np.vstack([X_in, X_out])
-    y = np.array([1] * half + [0] * half)
-    # shuffle
-    perm = rng.permutation(n_samples)
-    return X[perm], y[perm]
 
 
 def accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:

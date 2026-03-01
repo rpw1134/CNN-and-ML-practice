@@ -20,18 +20,10 @@ from ml_practice_and_neural_net.ml_practice.neural_nets.networks.MLP import MLP
 from ml_practice_and_neural_net.ml_practice.data_classes.NNLayerParameters import NNLayerParameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNHyperparameters import NNHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNParameters import NNParameters
+from ml_practice_and_neural_net.ml_practice.data_management.dataset_generation import generate_sine_data
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
-
-def generate_sine_data(n_samples: int = 800, noise: float = 0.05,
-                        random_state: int = 42) -> tuple:
-    """y = sin(x) + noise, x uniformly sampled from [-π, π]."""
-    rng = np.random.RandomState(random_state)
-    x = rng.uniform(-np.pi, np.pi, n_samples)
-    y = np.sin(x) + rng.normal(0, noise, n_samples)
-    # shape: (n, 1) for both so the MLP sees a proper 2-D input/target
-    return x.reshape(-1, 1), y.reshape(-1, 1)
 
 
 def r2_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
