@@ -1,6 +1,6 @@
-from cce import build as build_cce
-from mse import build as build_mse
-from ce import build as build_ce
+from .cce import build as build_cce
+from .mse import build as build_mse
+from .ce import build as build_ce
 
 loss_map = {"mse": build_mse,
             "cce": build_cce,

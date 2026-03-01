@@ -1,4 +1,4 @@
-from initializers import normal, he_normal, xavier_normal, uniform, he_uniform, xavier_uniform
+from .initializers import normal, he_normal, xavier_normal, uniform, he_uniform, xavier_uniform
 
 
 initializers_map = {"normal": normal,
