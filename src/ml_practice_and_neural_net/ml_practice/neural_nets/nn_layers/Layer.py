@@ -23,6 +23,12 @@ class Layer:
 
     Loss gradient functions return raw (un-averaged) gradients; averaging over
     the batch is performed here before applying the learning rate.
+
+    Residual connection:
+        When input_dim == output_dim the skip is a fixed identity — no parameters.
+        When input_dim != output_dim a learned projection matrix W_proj
+        (xavier-initialised, shape (output_dim, input_dim)) is used and trained
+        alongside the main weights.
     """
 
     def __init__(self, params: NNLayerParameters, learning_rate: float = 0.001):
@@ -44,7 +50,15 @@ class Layer:
         self.sparsity_mask = (np.random.rand(self.output_dim, self.input_dim) < self.sparsity) if self.sparsity < 1.0 else None
 
         self.use_residuals = params.use_residuals
-        self.projection_mask = np.ones(shape=(self.output_dim, self.input_dim))
+        if self.use_residuals:
+            if self.input_dim == self.output_dim:
+                # fixed identity — no parameters to learn
+                self.projection_weights = None
+            else:
+                # learned linear projection to match dimensions
+                self.projection_weights = initializers_map["xavier_normal"](
+                    output_dim=self.output_dim, input_dim=self.input_dim
+                )
 
     def feed_forward(self, input_vector: NDArray) -> NDArray:
         """Run one forward pass, caching input/z/a for backprop.
@@ -66,7 +80,9 @@ class Layer:
         self.a = self.activation(self.z)
 
         if self.use_residuals:
-            self.a += self.input @ self.projection_mask.T  # (batch_size, output_dim)
+            # identity shortcut when dims match, else learned projection
+            skip = self.input if self.projection_weights is None else self.input @ self.projection_weights.T
+            self.a += skip  # (batch_size, output_dim)
 
         return self.a  # (batch_size, output_dim)
 
@@ -97,9 +113,14 @@ class Layer:
         input_gradient = delta @ effective_weights  # (batch_size, input_dim)
 
         if self.use_residuals:
-            input_gradient += prev_layer_gradient @ self.projection_mask  # (batch_size, input_dim)
-            projection_update = prev_layer_gradient.T @ self.input / batch_size  # (output_dim, input_dim)
-            self.projection_mask -= self.learning_rate * projection_update
+            if self.projection_weights is None:
+                # identity shortcut — gradient passes straight through, no parameters
+                input_gradient += prev_layer_gradient
+            else:
+                # learned projection — propagate gradient and update weights
+                input_gradient += prev_layer_gradient @ self.projection_weights  # (batch_size, input_dim)
+                proj_update = prev_layer_gradient.T @ self.input / batch_size    # (output_dim, input_dim)
+                self.projection_weights -= self.learning_rate * proj_update
 
         self.weights -= self.learning_rate * weight_update
         self.biases -= self.learning_rate * bias_update

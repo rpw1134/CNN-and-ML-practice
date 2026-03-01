@@ -21,7 +21,7 @@ def shuffle_data(data: NDArray, labels: NDArray) -> Tuple[NDArray, NDArray]:
     np.random.shuffle(indices)
     return data[indices], labels[indices]
 
-def split_data(data: NDArray, labels: NDArray, test_ratio: float = 0.8, shuffle: bool = True)-> Tuple[NDArray, NDArray, NDArray, NDArray]:
+def split_data(data: NDArray, labels: NDArray, test_ratio: float = 0.2, shuffle: bool = True)-> Tuple[NDArray, NDArray, NDArray, NDArray]:
     """
         Splits the data and labels into training and testing sets based on the specified ratio. Optionally shuffles the data before splitting.
     :param data: np.NDArray: The dataset to be split. It is expected to be a 2D array where rows are samples and columns are features.
