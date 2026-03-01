@@ -20,11 +20,15 @@ class Layer:
         dL/dW = delta.T @ X / batch_size   shape: (output_dim, input_dim)
         dL/db = mean(delta, axis=0)        shape: (output_dim,)
         dL/dX = delta @ W                  shape: (batch_size, input_dim)
+
+    Loss gradient functions return raw (un-averaged) gradients; averaging over
+    the batch is performed here before applying the learning rate.
     """
 
-    def __init__(self, params: NNLayerParameters):
+    def __init__(self, params: NNLayerParameters, learning_rate: float = 0.001):
         self.width = self.output_dim = params.width
         self.input_dim = params.input_dim
+        self.learning_rate = learning_rate
 
         self.activation, self.activation_derivative = activation_map[params.activation]()
 
@@ -95,9 +99,9 @@ class Layer:
         if self.use_residuals:
             input_gradient += prev_layer_gradient @ self.projection_mask  # (batch_size, input_dim)
             projection_update = prev_layer_gradient.T @ self.input / batch_size  # (output_dim, input_dim)
-            self.projection_mask -= projection_update
+            self.projection_mask -= self.learning_rate * projection_update
 
-        self.weights -= weight_update
-        self.biases -= bias_update
+        self.weights -= self.learning_rate * weight_update
+        self.biases -= self.learning_rate * bias_update
 
         return input_gradient  # (batch_size, input_dim)

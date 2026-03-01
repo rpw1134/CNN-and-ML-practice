@@ -1,5 +1,4 @@
 from numpy.typing import NDArray
-from typing import Tuple
 import numpy as np
 from ml_practice_and_neural_net.ml_practice.data_management.transformations import logistic
 
@@ -11,5 +10,6 @@ def loss(predictions: NDArray, targets: NDArray) -> float:
 
 
 def gradient(predictions: NDArray, targets: NDArray) -> NDArray:
-    """dL/dA = (sigmoid(A) - y) / batch_size."""
+    """dL/dA per sample = sigmoid(A) - y, shape: (batch_size, 1).
+    Batch averaging is handled by the layer, not here."""
     return logistic(predictions) - targets

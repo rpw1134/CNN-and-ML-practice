@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List
 
 from ml_practice_and_neural_net.ml_practice.data_classes.NNHyperparameters import NNHyperparameters
 from ml_practice_and_neural_net.ml_practice.data_classes.NNLayerParameters import NNLayerParameters
@@ -20,8 +20,8 @@ class MLP:
     # if at any point validation doesn't increase for to many iterations, stop training and return the model with the best validation error (need to track best weights and biases)
 
     def __init__(self, layer_configs: List[NNLayerParameters], hyperparameters: NNHyperparameters, params: NNParameters):
-        self.layers = [Layer(config) for config in layer_configs]
         self.learning_rate = hyperparameters.learning_rate
+        self.layers = [Layer(config, learning_rate=self.learning_rate) for config in layer_configs]
         self.num_iterations = hyperparameters.num_iterations
         self.regularization_strength = hyperparameters.regularization_strength
         self.regularization_type = hyperparameters.regularization_type

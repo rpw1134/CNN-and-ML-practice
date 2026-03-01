@@ -1,5 +1,4 @@
 from numpy.typing import NDArray
-from typing import Tuple
 import numpy as np
 
 
@@ -16,5 +15,6 @@ def loss(predictions: NDArray, targets: NDArray) -> float:
 
 
 def gradient(predictions: NDArray, targets: NDArray) -> NDArray:
-    """dL/dA = (softmax(A) - Y) / batch_size."""
+    """dL/dA per sample = softmax(A) - Y, shape: (batch_size, num_classes).
+    Batch averaging is handled by the layer, not here."""
     return _softmax(predictions) - targets
